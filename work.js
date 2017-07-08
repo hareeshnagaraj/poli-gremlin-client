@@ -9,8 +9,5 @@ client.memberLists({
 	congressNumber: '114',
 	chamber: 'house'
     }).then(function(res){
-	console.dir(res, {depth:5});
+		console.dir(res, {depth:5});
     });
-
-
-
