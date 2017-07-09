@@ -51,6 +51,7 @@ var populateCongressMembers = function(congressSeshNumber, chamber, workDir)
 
 		// Enumerate the response
 		console.dir(members, 5);
+
 	});
 };
 
