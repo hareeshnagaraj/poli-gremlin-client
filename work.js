@@ -1,9 +1,11 @@
 // Set your API key to an environment variable 
 // Below script assumes propublicakey=yourkey and is accessed through process.env
 // You can set the env var with the following command: export propublicakey={your key}
-var fs = require('fs');
-var Congress = require('propublica-congress-node');
-var uuid = require('uuid');
+
+const Promise = require('bluebird');
+const fs = require('fs');
+const Congress = require('propublica-congress-node');
+const uuid = require('uuid');
 
 // Global members
 var client = new Congress(process.env.propublicakey);
@@ -41,17 +43,20 @@ var populateCongressMembers = function(congressSeshNumber, chamber, workDir)
 		congressNumber: congressSeshNumber,
 		chamber: chamber
 	}).then(function(res, error){
-
-		var members = res['results'][0];
+		var data = res['results'][0];
 		// Write JSON file with all members for this particular congress
 		if(workDir != null)
 		{
-			writeResponseFile(members, 'CongressMembers_'+congressSeshNumber+'_'+chamber, workDir)
+			writeResponseFile(data, 'CongressMembers_'+congressSeshNumber+'_'+chamber, workDir)
 		}
 
+		var members = data['members'];
 		// Enumerate the response
 		console.dir(members, 5);
-
+		Promise.map(members, (x)=>{
+			// Do stuff
+			console.log(x['first_name'] + ' ' + x['last_name']);
+		});
 	});
 };
 
