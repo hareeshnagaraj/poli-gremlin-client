@@ -9,6 +9,7 @@ const uuid = require('uuid');
 
 // Global members
 var client = new Congress(process.env.propublicakey);
+var globalWorkDir;
 
 var initializeWorkDirectory = function()
 {
@@ -52,13 +53,20 @@ var populateCongressMembers = function(congressSeshNumber, chamber, workDir)
 
 		var members = data['members'];
 		// Enumerate the response
-		console.dir(members, 5);
-		Promise.map(members, (x)=>{
-			// Do stuff
-			console.log(x['first_name'] + ' ' + x['last_name']);
-		});
+		Promise.map(members, populateMemberInfo);
 	});
 };
+
+var populateMemberInfo = function(x)
+{
+	client.memberBioAndRoles({
+		memberId: x['id']
+	}).then(function(res, error){
+		var data = res['results'][0];
+		var apiName = 'Member_' + x['id'] + '_' + x['first_name'] + x['last_name'] + '_' + uuid.v1();
+		writeResponseFile(data, apiName, globalWorkDir);
+	});
+}
 
 // Write a file with the JSON response from ProPublica API
 var writeResponseFile = function(data, apiname, dir)
@@ -72,6 +80,6 @@ var writeResponseFile = function(data, apiname, dir)
 }
 
 // Testing
-var workDir = initializeWorkDirectory();
-populateCongressMembers(115, 'house', workDir);
-populateCongressMembers(115, 'senate', workDir);
+var globalWorkDir = initializeWorkDirectory();
+populateCongressMembers(115, 'house', globalWorkDir);
+populateCongressMembers(115, 'senate', globalWorkDir);
