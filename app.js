@@ -20,29 +20,43 @@ const PopulateSenateMembers = function(jsonFilePath){
     var json = JSON.parse(fs.readFileSync(jsonFilePath, 'utf8'));
     var congressNum = json['congress'];
     var senateMembers = json['members'];
+    var queries = [];
     
     for(var i = 0; i < senateMembers.length; i++){
-        // Client operation on given member
-        var currentMember = senateMembers[i];
-        var firstName = currentMember['first_name'];
-        var lastName = currentMember['last_name'];
-        var vertexName = firstName + '-' + lastName;
-
-        var queryStr = '';
-        for(var key in currentMember){
-            queryStr += ("\"" + key + "\"" + ',' + "\"" + currentMember[key] + "\"" + ',');
-        }
-        
-        queryStr = queryStr.slice(0, -1);
-
-        var clientQueryStr = 'graph.addVertex(' + queryStr + ');';
-        console.log(clientQueryStr);
+        var clientQueryStr = 'graph.addVertex(' + GetSenateMemberVertexQuery(senateMembers[i]) + ');';
+        queries.push(clientQueryStr);
     }
+
+    Promise.map(queries, GremlinQuery);
 }
 
-const AddSenateMemberVertex = function(x)
+// Get query for senate member
+const GetSenateMemberVertexQuery = function(currentMember)
 {
+    var firstName = currentMember['first_name'];
+    var lastName = currentMember['last_name'];
+    var vertexName = firstName + '-' + lastName;
 
+    var queryStr = '';
+    for(var key in currentMember){
+        queryStr += ("\"" + key + "\"" + ',' + "\"" + currentMember[key] + "\"" + ',');
+    }
+
+    queryStr = queryStr.slice(0, -1);
+    return queryStr;
+}
+
+// Execute gremlin query
+const GremlinQuery = function(query)
+{
+    client.execute(query, function(err, results) {
+        if (!err) {
+            console.log(results) // Handle an array of results 
+        }
+        else{
+            console.log("Error executing " + query);
+        }
+    });
 }
 
 // var vertexQuery = client.stream('g.V()');
