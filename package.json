@@ -1,0 +1,23 @@
+{
+  "name": "poli-gremlin-client",
+  "version": "1.0.0",
+  "description": "Generation of congressional graph through gremlin-client npm",
+  "main": "app.js",
+  "scripts": {
+    "test": ""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hareeshnagaraj/poli-gremlin-client.git"
+  },
+  "author": "Hareesh Nagaraj",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hareeshnagaraj/poli-gremlin-client/issues"
+  },
+  "homepage": "https://github.com/hareeshnagaraj/poli-gremlin-client#readme",
+  "dependencies": {
+    "bluebird": "^3.5.0",
+    "gremlin-client": "^1.0.3"
+  }
+}
