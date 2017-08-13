@@ -14,20 +14,19 @@ const options = {
     cert:  fs.readFileSync(__dirname + '/config/server.crt'),
     spdy: {
       protocols: [ 'h2', 'spdy/3.1', 'http/1.1' ],
-      plain: false,
+      plain: true, //true: enables plain text data transfer over http/1.1, false: http/2 only
       ssl: true
     }
 }
-
-const server = spdy.createServer(options, app).listen(port, serverHandler)
-
 
 app.use(bodyParser.json())
 app.use(errorHandler)
 app.use(express.static(path.resolve(__dirname, '../../', 'public')));
 
 app.get('/', (req: express.Request, res: express.Response) => {
-  res.sendFile(path.resolve(__dirname, '../../', 'public', 'index.html'));
+  console.log('sup dawg')
+  res.send('hello world!')
+  // res.sendFile(path.resolve(__dirname, '../../', 'public', 'index.html'));
 });
 
 app.use('/welcome', WelcomeController);
@@ -38,6 +37,10 @@ function errorHandler(err: NodeJS.ErrnoException, req: express.Request, res: exp
 }
 
 function serverHandler(error: NodeJS.ErrnoException): void{
-  if(error) console.error(error)
+  if(error) throw `Error! ${error}`
   console.log('Listening on port: ', port)
 }
+
+console.log(app)
+const server = spdy.createServer(options, app).listen(port, serverHandler)
+// spdy.createServer(options, app).listen(port, serverHandler)
