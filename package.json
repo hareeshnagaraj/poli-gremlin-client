@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node ./src/server/index.js",
     "transpile": "tsc",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "docker": "sudo docker build -t scraper-service . && sudo docker run -it -p 127.0.0.1:3000:3000 poli-gremlin-client"
   },
   "author": "",
   "license": "ISC",
