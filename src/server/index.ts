@@ -1,15 +1,13 @@
-const express = require('express')
-const bodyParser = require('body-parser')
-const fs = require('fs')
-const spdy = require('spdy')
+import * as express from 'express'
+import * as bodyParser from 'body-parser'
+import * as fs from 'fs'
+import * as path from 'path'
+import * as spdy from 'spdy'
 
-const app = express()//: Express.Application = express();
-// const app: express.Express = express();
+import {WelcomeController} from '../controllers'
 
+const app = express()
 const port: number = parseInt(process.env.PORT) || 3000
-
-const WelcomeController = require('../controllers')
-// const serverHandlers = require('./serverHandlers')
 
 const options = {
     key: fs.readFileSync(__dirname + '/config/server.key'),
@@ -17,6 +15,7 @@ const options = {
     spdy: {
       protocols: [ 'h2', 'spdy/3.1', 'http/1.1' ],
       plain: false,
+      ssl: true
     }
 }
 
@@ -25,16 +24,17 @@ const server = spdy.createServer(options, app).listen(port, serverHandler)
 
 app.use(bodyParser.json())
 app.use(errorHandler)
+app.use(express.static(path.resolve(__dirname, '../../', 'public')));
+
+app.get('/', (req: express.Request, res: express.Response) => {
+  res.sendFile(path.resolve(__dirname, '../../', 'public', 'index.html'));
+});
+
 app.use('/welcome', WelcomeController);
 
-app.get('/', (req: Express.Request, res: Express.Response, next: Function): void => {
-  console.log(res)
-  // res.send()
 
-})
-
-function errorHandler(err: NodeJS.ErrnoException, req: Express.Request, res: Express.Response, next: Function): void {
-  console.error(err)
+function errorHandler(err: NodeJS.ErrnoException, req: express.Request, res: express.Response, next: Function): void {
+  console.error('ERROR!', err)
 }
 
 function serverHandler(error: NodeJS.ErrnoException): void{
