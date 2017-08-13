@@ -12,6 +12,7 @@ const args = argv['_'];
 const populate = 'populate';
 const house = 'house';
 const senate = 'senate';
+const committees = 'committees';
 
 // Will open a WebSocket to ws://localhost:8182 by default 
 const client = gremlin.createClient();
@@ -46,12 +47,35 @@ const GetSenateMemberVertexQuery = function(currentMember)
     return queryStr;
 }
 
+// Finds corresponding json file for every member returned
+// by g.V() query for all vertices
+const FindCorrespondingMemberJsonFiles = function(allMemberData, jsonDir)
+{
+    var queries = [];
+    for(var i = 0; i < allMemberData.length; i++) {
+        var firstName = allMemberData[i].properties['first_name'][0]['value'];
+        var lastName = allMemberData[i].properties['last_name'][0]['value'];
+        console.dir(allMemberData[i], {depth: 5});
+
+//     first_name: [ { id: 'xzq-cs0-35x', value: 'Bill' } ],
+        console.log(firstName + ' ' + lastName);
+
+        // var clientQueryStr = 'g.V().has(\'first_name\',' + '\'' + firstName + '\'' + ',\'last_name\',' + '\'' +lastName + '\'' +');';
+        var clientQueryStr = 'g.V().has(\'first_name\',' + '\'' + firstName + '\'' +');';
+
+        console.log(clientQueryStr);
+        queries.push(clientQueryStr);
+    }
+
+    Promise.map(queries, GremlinQuery);
+}
+
 // Execute gremlin query
 const GremlinQuery = function(query)
 {
     client.execute(query, function(err, results) {
         if (!err) {
-            console.log(results) // Handle an array of results 
+            console.dir(results, {depth: 5});
         }
         else{
             console.log("Error executing " + query);
@@ -59,28 +83,8 @@ const GremlinQuery = function(query)
     });
 }
 
-// var vertexQuery = client.stream('g.V()');
- 
-// vertexQuery.on('data', function(result) {
-//   console.log(result);
-//   removeVertices(result['properties']);
-// });
- 
-// vertexQuery.on('end', function() {
-//   console.log("All results fetched");
-// });
-
-// function removeVertices(nodes)
-// {
-//   console.log(nodes);
-// }
-
-// 2 graphs
-// 1 senate, 1 house
-// Start w/senate for ease of use
-
-
 // Command line parsing
+// EX: node app.js populate senate propublicaapifile.json
 if(args[0] == populate){
 
     if(args.length < 3)
@@ -104,4 +108,34 @@ if(args[0] == populate){
     }
 
     console.log('Populating ' + chamber + ' from : ' + file);
+}
+
+// EX: node app.js committees senate dir
+// The directory argument should contain all the files returned from 
+// https://github.com/hareeshnagaraj/propublica-api-population
+
+if(args[0] == committees)
+{
+    if(args.length < 3)
+    {   
+        throw new Error('Incorrect usage. Ex: node app.js committees [house/senate] [path to dir]');
+    }
+    else if (args[1] != house && args[1] != senate)
+    {
+        throw new Error('Incorrect usage. Ex: node app.js committees [house/senate] [path to dir]');        
+    }
+
+    var chamber = args[1];
+    var dir = args[2];
+
+    console.log('Populating ' + chamber + ' Committees from : ' + dir);
+
+    client.execute('g.V()', function(err, results) {
+        if (!err) {
+            FindCorrespondingMemberJsonFiles(results, dir);
+        }
+        else{
+            throw new Error("Error executing " + query);
+        }
+    });
 }
