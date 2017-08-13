@@ -1,15 +1,15 @@
-import { Router, Request, Response } from 'express';
+import { Router, Request, Response } from 'express'
 
-const router: Router = Router();
+const router: Router = Router()
 
 router.get('/', (req: Request, res: Response) => {
-    res.send('Hello, World!');
-});
+    res.send('Hello, World!')
+})
 
 router.get('/:name', (req: Request, res: Response) => {
-    let { name } = req.params;
+    let { name } = req.params
 
-    res.send(`Hello, ${name}!`);
-});
+    res.send(`Hello, ${name}!`)
+})
 
-export const WelcomeController: Router = router;
+export const WelcomeController: Router = router
