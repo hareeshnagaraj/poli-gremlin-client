@@ -1,19 +1,17 @@
 import * as React from "react";
-import * as rx from 'rxjs'
+import * as rx from 'rxjs';
 
+export interface HelloProps { name: string; }
 
-export interface HelloProps {
-  name: string;
-}
+// export const Hello = (props: HelloProps) => <h1>Hello {props.name}!</h1>;
 
-function Hello({name}: HelloProps){
+export function Greeting(props: HelloProps){
   return (
-    <div className="hello">
-      <div className="greeting">
-        Hello {name}
-      </div>
+    <div>
+      Greetings {props.name}
     </div>
   );
 }
 
-export default Hello;
+
+//https://www.typescriptlang.org/docs/handbook/react-&-webpack.html

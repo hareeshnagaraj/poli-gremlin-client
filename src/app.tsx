@@ -1,9 +1,23 @@
-import * as react from 'react'
+import * as React from 'react'
 import * as ReactDOM from "react-dom"
 
-import Hello from './components/greeting'
+import {Greeting} from './components/greeting'
+
+function App() {
+  return (
+    <div>
+      <Greeting name="Mike" />
+    </div>
+  )
+}
 
 ReactDOM.render(
-  <Hello name="Willson" />,
-  document.getElementById("root")
-)
+  // <Provider store={store}>
+    <App />,
+    // <Greeting name="Mike" />,
+
+  // </Provider>,
+  document.getElementById('root') as HTMLElement
+);
+
+export default App
