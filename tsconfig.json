@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "outDir": "build",
+        "outDir": "public/build",
         "module": "commonjs",
         "target": "es5",
         "jsx": "react",
@@ -10,10 +10,12 @@
         ],
         "skipLibCheck": true,
         "noImplicitAny": false,
+        "removeComments": true,
+        "preserveConstEnums": true,
         "sourceMap": true
     },
     "include": [
-        "src/**/*.ts"
+        "src/**/*.tsx"
     ],
     "exclude": [
         "node_modules",

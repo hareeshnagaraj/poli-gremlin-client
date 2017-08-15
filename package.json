@@ -5,7 +5,10 @@
   "main": "index.js",
   "scripts": {
     "start": "node ./server",
+    "build-prod": "webpack --optimize-minimize",
+    "build-dev": "webpack",
     "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "webpack-dev-server",
     "docker-build": "sudo docker build -t poli-gremlin-client .",
     "docker-run": "sudo docker run -it -p 127.0.0.1:3000:3000 poli-gremlin-client"
   },
@@ -30,8 +33,13 @@
   },
   "devDependencies": {
     "awesome-typescript-loader": "^3.2.2",
+    "css-loader": "^0.28.4",
+    "file-loader": "^0.11.2",
     "source-map-loader": "^0.2.1",
+    "style-loader": "^0.18.2",
+    "ts-loader": "^2.3.2",
     "typescript": "^2.4.2",
-    "webpack": "^3.5.4"
+    "webpack": "^3.5.4",
+    "webpack-dev-server": "^2.7.1"
   }
 }
