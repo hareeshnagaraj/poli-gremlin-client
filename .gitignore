@@ -4,6 +4,9 @@ package-lock.json
 
 work/
 build/
+config/
+
+old/
 
 # Logs
 logs

@@ -3,11 +3,14 @@
         "outDir": "build",
         "module": "commonjs",
         "target": "es5",
+        "jsx": "react",
         "lib": [
-          "es6"
+          "es6",
+          "dom"
         ],
+        "skipLibCheck": true,
         "noImplicitAny": false,
-        "sourceMap": false
+        "sourceMap": true
     },
     "include": [
         "src/**/*.ts"
