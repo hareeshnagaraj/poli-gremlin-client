@@ -1,10 +1,22 @@
-import * as Rx from 'rxjs';
+import {graphData} from './index'
 
-export const graphData = Rx.Observable.ajax.getJSON('/test')
+/* Congress Critter JSON Observable
+  https://preview.npmjs.com/package/rx-dom */
+export const graphDataObservable = graphData.subscribe(handleGraphData, handleObsErr)
 
-//
-// export interface ParseProps { name: string; }
-//
-// export function parse(){
-//
-// }
+//main stream control flow function
+function handleGraphData(data) {
+  return data.filter(filterCongressCritters('D')) // {D: Democrats, R: Republicans}
+             .map(s => s)
+             .forEach(s => console.log(s,s.length))
+}
+
+function filterCongressCritters(party: string): any {
+  return (critter) => {
+    return critter.properties.party[0].value === party
+  }
+}
+
+function handleObsErr(err){
+  console.error(`Stream Error: ${err}`)
+}

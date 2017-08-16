@@ -4,9 +4,9 @@ import { browserHistory } from 'react-router-dom'
 
 import {Greeting} from './components/greeting'
 import {graphDataObservable} from './eventHandlers'
-// import {Routes} from './routes'
+import {Routes} from './routes'
 
-// console.log(graphDataObservable)
+/* here to log to the console for dev purposes */
 graphDataObservable
 
 function App() {
