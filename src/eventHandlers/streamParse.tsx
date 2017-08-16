@@ -1,7 +1,6 @@
 import {graphData} from './index'
 
-/* Congress Critter JSON Observable
-  https://preview.npmjs.com/package/rx-dom */
+/* Congress Critter JSON Observable */
 export const graphDataObservable = graphData.subscribe(handleGraphData, handleObsErr)
 
 //main stream control flow function
