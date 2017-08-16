@@ -12,12 +12,6 @@ function App() {
 }
 
 ReactDOM.render(
-  // <Provider store={store}>
-    <App />,
-    // <Greeting name="Mike" />,
-
-  // </Provider>,
+  <App />,
   document.getElementById('root') as HTMLElement
 );
-
-export default App

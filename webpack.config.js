@@ -1,6 +1,6 @@
 const path = require('path');
 const webpack = require('webpack');
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+// const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
 
 module.exports = {
@@ -10,6 +10,10 @@ module.exports = {
     filename: 'app.js',//'[name].js',
     path: path.resolve(`${__dirname}/public`, 'build'),
     publicPath: '/',
+  },
+  resolve: {
+    // Add '.ts' and '.tsx' as resolvable extensions.
+    extensions: [".ts", ".tsx", ".js", ".json"]
   },
   module: {
     rules: [
@@ -40,8 +44,8 @@ module.exports = {
           loader: "file-loader"
         },
      ]
-  },
-  plugins: [
-    new UglifyJsPlugin()
-  ]
+  }//,
+  // plugins: [
+  //   new UglifyJsPlugin()
+  // ]
 };
