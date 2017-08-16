@@ -1,8 +1,11 @@
 //https://flowingdata.com/2017/04/24/how-disinformation-spreads-in-a-network/
 
 import {graphDataObservable} from '../eventHandlers'
+
+import * as React from "react";
 import * as Graph from 'react-graph-vis'
-// var Graph = require('react-graph-vis');
+
+import {render} from 'react-dom'
 
 /* Visualize the Graph Data Stream
 
@@ -12,11 +15,11 @@ http://visjs.org/network_examples.html
 
 const graph = {
   nodes: [
-      {id: 1, label: 'Node 1'},
-      {id: 2, label: 'Node 2'},
-      {id: 3, label: 'Node 3'},
-      {id: 4, label: 'Node 4'},
-      {id: 5, label: 'Node 5'}
+      {id: 1, label: 'Node 1', color: '#e04141'},
+      {id: 2, label: 'Node 2', color: '#e09c41'},
+      {id: 3, label: 'Node 3', color: '#e0df41'},
+      {id: 4, label: 'Node 4', color: '#7be041'},
+      {id: 5, label: 'Node 5', color: '#41e0c9'}
     ],
   edges: [
       {from: 1, to: 2},
@@ -41,4 +44,17 @@ const events = {
     }
 }
 
+export {Graph,graph,options,events}
+
+
+export interface GraphProps { graph: object; options: object; events: object; }
+
+export function NetworkGraph(props: GraphProps){
+  return (
+    <div>
+      <Graph graph={props.graph} options={props.options} events={props.events} />
+    </div>
+  )
+}
+//
 // React.render(<Graph graph={graph} options={options} events={events} />, document.body);
