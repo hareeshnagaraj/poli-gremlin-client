@@ -11,7 +11,7 @@ COPY . /usr/Public-Commons/poli-gremlin-client
 
 RUN npm install
 RUN npm install -g typescript
-RUN tsc
+RUN npm run build-dev
 
 EXPOSE 3000
 

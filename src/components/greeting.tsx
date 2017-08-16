@@ -1,5 +1,4 @@
 import * as React from "react";
-import * as rx from 'rxjs';
 
 export interface HelloProps { name: string; }
 
