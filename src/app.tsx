@@ -6,13 +6,15 @@ import {Greeting} from './components/greeting'
 import {graphDataObservable} from './eventHandlers'
 import {Routes} from './routes'
 
-import Graph, {graph,options,events} from './components/visualizer'
+import {Graph, graph,options,events} from './components/visualizer'
 // import {NetworkGraph} from './components/visualizer'
 // import * as GraphComp from './components/visualizer'
 // import Graph,graph,options,events from './components/visualizer'
 
 /* here to log to the console for dev purposes */
 graphDataObservable
+const rootElement = document.getElementById('root') as HTMLElement
+
 
 function App() {
   return (
@@ -22,19 +24,15 @@ function App() {
   )
 }
 
-function NetGraphEl(): any{
-  // const Graph = GraphComp.default.Graph
-  // const graph = GraphComp.default.graph
-  // const options = GraphComp.default.options
-  // const events = GraphComp.default.events
 
+function NetGraphEl(){
+  console.log('GRAPH!', Graph.default)
   return (
     <div>
-      <Graph graph={graph} options={options} events={events} />
+      <Graph.default graph={graph} options={options} events={events} />
     </div>
   )
 }
-
 
 ReactDOM.render(
   <div>
@@ -42,11 +40,11 @@ ReactDOM.render(
       <App />
     </div>
     <div>
-      <NetGraphEl/>
+      <NetGraphEl />
     </div>
   </div>
   ,
-  document.getElementById('root') as HTMLElement
+  rootElement
 );
 
 

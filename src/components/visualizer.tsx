@@ -2,7 +2,7 @@
 
 import {graphDataObservable} from '../eventHandlers'
 
-import * as React from "react";
+import * as React from "react"
 import * as Graph from 'react-graph-vis'
 
 import {render} from 'react-dom'
@@ -11,6 +11,7 @@ import {render} from 'react-dom'
 
 https://www.npmjs.com/package/react-graph-vis
 http://visjs.org/network_examples.html
+https://medium.com/ninjaconcept/interactive-dynamic-force-directed-graphs-with-d3-da720c6d7811
 */
 
 const graph = {
@@ -56,5 +57,3 @@ export function NetworkGraph(props: GraphProps){
     </div>
   )
 }
-//
-// React.render(<Graph graph={graph} options={options} events={events} />, document.body);

@@ -5,11 +5,7 @@ export interface HelloProps { name: string; }
 export function Greeting(props: HelloProps){
   return (
     <div>
-      <h2>Dashboard</h2>
-      Greetings {props.name}
+      <h1> {props.name} </h1>
     </div>
-  );
+  )
 }
-
-
-//https://www.typescriptlang.org/docs/handbook/react-&-webpack.html
