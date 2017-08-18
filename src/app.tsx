@@ -7,9 +7,6 @@ import {graphDataObservable} from './eventHandlers'
 import {Routes} from './routes'
 
 import {Graph, graph,options,events} from './components/visualizer'
-// import {NetworkGraph} from './components/visualizer'
-// import * as GraphComp from './components/visualizer'
-// import Graph,graph,options,events from './components/visualizer'
 
 /* here to log to the console for dev purposes */
 graphDataObservable
@@ -26,7 +23,6 @@ function App() {
 
 
 function NetGraphEl(){
-  console.log('GRAPH!', Graph.default)
   return (
     <div>
       <Graph.default graph={graph} options={options} events={events} />

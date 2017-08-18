@@ -7,8 +7,6 @@ Real-time visualization of Congressional graph data
 
 * Front End: Typescript, React, RxJS, Webpack, Docker, propublica-congress-node, gremlin-client
 
-----
-
 * Back End: JanusGraph, Cassandra, Azure, Java
 
 
