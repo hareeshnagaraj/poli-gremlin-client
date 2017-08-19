@@ -18,3 +18,20 @@ Redux Observables
 
 Redux Sagas -> tool for managing side effects
     https://medium.freecodecamp.org/async-operations-using-redux-saga-2ba02ae077b3
+
+Excellent Overview of different pieces of state management
+  https://code-cartoons.com/a-cartoon-intro-to-redux-3afb775501a6
+
+  Actions
+    are dispatched when a change to the application sate is desired.
+      The state store only has getters, can only alter state through desired channels
+        -> (specified reducer function)
+
+  Reducers
+    are used to change application state -> adopts a functional immutable paradigm.
+      Can be nested hierarchically. First copy area to change, then return a new state.
+
+  Smart components (orchestrate actions and thereby direct dumb components; they are unstyled)
+
+Connecting state store to the view layer
+  can use react-redux

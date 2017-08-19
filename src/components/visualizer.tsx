@@ -2,7 +2,7 @@
 
 import {graphDataObservable} from '../epics'
 
-import * as React from "react"
+import * as React from 'react'
 import * as Graph from 'react-graph-vis'
 
 import {render} from 'react-dom'
