@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
-import {Greeting} from './components/greeting';
+import {Greeting} from './components';
 // import { Provider } from 'react-redux';
 // import { createStore } from 'redux';
 // import { enthusiasm } from './reducers/index';

@@ -2,8 +2,8 @@ import * as React from 'react'
 import * as ReactDOM from "react-dom"
 // import { browserHistory } from 'react-router-dom'
 
-import {Greeting} from './components/greeting'
-import {graphDataObservable} from './eventHandlers'
+import {Greeting} from './components'
+import {graphDataObservable} from './epics'
 import {Routes} from './routes'
 
 import {Graph, graph,options,events} from './components/visualizer'

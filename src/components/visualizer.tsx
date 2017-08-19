@@ -1,6 +1,6 @@
 //https://flowingdata.com/2017/04/24/how-disinformation-spreads-in-a-network/
 
-import {graphDataObservable} from '../eventHandlers'
+import {graphDataObservable} from '../epics'
 
 import * as React from "react"
 import * as Graph from 'react-graph-vis'
