@@ -10,6 +10,5 @@ export default function configureStore() {
     applyMiddleware(epicMiddleware)
   )
 
-
   return store
 }

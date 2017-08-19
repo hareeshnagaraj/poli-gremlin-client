@@ -5,14 +5,9 @@ import { Provider } from 'react-redux';
 
 import {Store} from './state/store'
 import {Greeting,Search} from './components'
+import {Graph, graph,options,events} from './components/visualizer'
 import {graphDataObservable} from './epics'
 import {Routes} from './routes'
-
-import {Graph, graph,options,events} from './components/visualizer'
-
-/* here to log to the console for dev purposes */
-graphDataObservable
-const rootElement = document.getElementById('root') as HTMLElement
 
 
 function App() {
@@ -32,8 +27,9 @@ function NetGraphEl(){
   )
 }
 
-const headerStyles = { background: 'blue', color: 'white', margin: '0 auto' }
 
+const headerStyles = { background: 'blue', color: 'white', margin: '0 auto' }
+const rootElement = document.getElementById('root') as HTMLElement
 
 ReactDOM.render(
   <Provider store={Store}>

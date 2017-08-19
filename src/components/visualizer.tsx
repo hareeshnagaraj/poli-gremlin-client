@@ -1,6 +1,6 @@
 //https://flowingdata.com/2017/04/24/how-disinformation-spreads-in-a-network/
 
-import {graphDataObservable} from '../epics'
+import {graphDataObservable,graphData} from '../epics'
 
 import * as React from 'react'
 import * as Graph from 'react-graph-vis'
@@ -13,6 +13,24 @@ https://www.npmjs.com/package/react-graph-vis
 http://visjs.org/network_examples.html
 https://medium.com/ninjaconcept/interactive-dynamic-force-directed-graphs-with-d3-da720c6d7811
 */
+
+// figure out a way to turn the observable into a regular object
+const graphNodes = []
+graphData.forEach(node => graphNodes.push(node))
+
+function dynamicNodes(){
+  console.log(graphNodes)
+  return graphNodes
+}
+// const graph = {
+//   nodes: dynamicNodes()[0],
+//   edges: [
+//       {from: 1, to: 2},
+//       {from: 1, to: 3},
+//       {from: 2, to: 4},
+//       {from: 2, to: 5}
+//     ]
+// };
 
 const graph = {
   nodes: [

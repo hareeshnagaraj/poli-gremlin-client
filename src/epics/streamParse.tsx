@@ -1,12 +1,27 @@
-import {graphData} from './index'
+import * as Rx from 'rxjs';
 
 /* Congress Critter JSON Observable */
-export const graphDataObservable = graphData.subscribe(handleGraphData, handleObsErr)
+export const graphData = Rx.Observable.ajax.getJSON('/test')
+
+export const graphDataObservable = graphData.subscribe(handleGraphData(visualizer), handleObsErr)
+
+// export const graphDataObservable = graphData.subscribe(handleGraphData(visualizer), handleObsErr)
 
 //main stream control flow function
-function handleGraphData(data) {
+  //can be passed logger or visualizer
+function handleGraphData(streamHander) {
+  return (data) => {
+    return streamHander(data)
+  }
+}
+
+function visualizer(data){
+  return data.filter(filterCongressCritters('R')) // {D: Democrats, R: Republicans}
+}
+
+
+function logger(data){
   return data.filter(filterCongressCritters('D')) // {D: Democrats, R: Republicans}
-             .map(s => s)
              .forEach(s => console.log(s,s.length))
 }
 
