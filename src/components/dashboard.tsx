@@ -5,8 +5,7 @@ export interface HelloProps { name: string; }
 export function Greeting(props: HelloProps){
   return (
     <div>
-      <h2>Dashboard</h2>
-      Greetings, {props.name}!
+      <h2>Greetings, {props.name}!</h2>
     </div>
   )
 }

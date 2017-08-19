@@ -10,7 +10,7 @@ export function Search(props: SearchProps){
   return (
     <div>
       <h1> {props.input} </h1>
-      <input type="text"></input>
+      <input type="search">Search Graph</input>
     </div>
   )
 }

@@ -1,8 +1,10 @@
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
+import { Provider } from 'react-redux';
 // import { browserHistory } from 'react-router-dom'
 
-import {Greeting} from './components'
+import {Store} from './state/store'
+import {Greeting,Search} from './components'
 import {graphDataObservable} from './epics'
 import {Routes} from './routes'
 
@@ -30,23 +32,26 @@ function NetGraphEl(){
   )
 }
 
+const headerStyles = { background: 'blue', color: 'white', margin: '0 auto' }
+
+
 ReactDOM.render(
-  <div>
+  <Provider store={Store}>
     <div>
-      <App />
+      <div style={headerStyles}>
+        <h1>PoliGraph</h1>
+      </div>
+      <div>
+        <App />
+        <p> What do you want to search for today?</p>
+      </div>
+      <div>
+        <NetGraphEl />
+      </div>
     </div>
-    <div>
-      <NetGraphEl />
-    </div>
-  </div>
+  </Provider>
   ,
   rootElement
 );
-
-
-// ReactDOM.render(
-//    <Routes history={browserHistory} />,
-//    document.getElementById('root')
-//  );
 
  export default App
