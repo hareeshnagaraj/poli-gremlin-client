@@ -1,5 +1,5 @@
 import * as React from 'react'
-import * as ReactDOM from "react-dom"
+import * as ReactDOM from 'react-dom'
 // import { browserHistory } from 'react-router-dom'
 
 import {Greeting} from './components'

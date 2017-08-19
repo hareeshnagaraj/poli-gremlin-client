@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node ./server",
     "build-prod": "webpack --optimize-minimize",
-    "build-dev": "webpack --progress --colors --watch",
+    "build-dev": "webpack --progress --colors",
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "webpack-dev-server",
     "docker-build": "sudo docker build -t poli-gremlin-client .",
