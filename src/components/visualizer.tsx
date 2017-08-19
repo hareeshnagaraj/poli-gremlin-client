@@ -1,27 +1,20 @@
-//https://flowingdata.com/2017/04/24/how-disinformation-spreads-in-a-network/
-
-import {graphDataObservable,graphData} from '../epics'
-
 import * as React from 'react'
 import * as Graph from 'react-graph-vis'
 
-import {render} from 'react-dom'
-
-/* Visualize the Graph Data Stream
-
-https://www.npmjs.com/package/react-graph-vis
-http://visjs.org/network_examples.html
-https://medium.com/ninjaconcept/interactive-dynamic-force-directed-graphs-with-d3-da720c6d7811
-*/
+import {graphDataObservable,graphData} from '../epics'
+import {Store} from '../state/store'
 
 // figure out a way to turn the observable into a regular object
+  //call the redux state store instead of the observables!
+
 const graphNodes = []
 graphData.forEach(node => graphNodes.push(node))
+console.log('Get store state',Store.getState())
 
-function dynamicNodes(){
-  console.log(graphNodes)
-  return graphNodes
+function dynamicNodes(obsNodes): any[]{
+  return obsNodes
 }
+
 // const graph = {
 //   nodes: dynamicNodes()[0],
 //   edges: [

@@ -1,8 +1,17 @@
+# The Challenge
+  https://flowingdata.com/2017/04/24/how-disinformation-spreads-in-a-network/
+
+
 ## Knowledge Graph
   Make the reading experience revolve around real-time graphs you can search and interact with.
 
 ## Functional React
 https://facebook.github.io/react/docs/components-and-props.html
+
+## Visualizing Graphs
+https://www.npmjs.com/package/react-graph-vis
+http://visjs.org/network_examples.html
+https://medium.com/ninjaconcept/interactive-dynamic-force-directed-graphs-with-d3-da720c6d7811
 
 
 ## Stream Parsing JSON
