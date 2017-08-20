@@ -9,7 +9,7 @@ import {Store} from '../state/store'
 
 const graphNodes = []
 graphData.forEach(node => graphNodes.push(node))
-console.log('Get store state',Store.getState())
+console.log('Get store state',Store.getState(),Store)
 
 function dynamicNodes(obsNodes): any[]{
   return obsNodes

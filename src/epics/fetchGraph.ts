@@ -3,31 +3,23 @@ import * as Rx from 'rxjs';
 // import {ajax} from 'rxjs/observable/dom/ajax'
 import {Store} from '../state/store'
 import {graphData} from './streamParse'
+import {fetchGraph,fetchGraphFulfilled} from '../state/actions'
 
-const ADD_Message = 'ADD_Message'
-const FETCH_GRAPH = 'FETCH_GRAPH'
-const graphName = 'Make a dynamic graph name'
 
-// export type Action = {
-//     type: 'FETCH_GRAPH',
-//     text: 'Build my first Redux app',
-//     // date: new Date
-// }
-
-const fetchGraph = graph => ({ type: FETCH_GRAPH, payload: graphName });
-
-// export declare interface Epic<T, S> { (action$: ActionsObservable<T>, store: MiddlewareAPI<S>): Observable<T>; }
-
+/* Epic is response for action dispatch */
 export const fetchGraphEpic = (action$, Store): any => {
   return action$.ofType('FETCH_GRAPH')
     .switchMap((action: any) =>
       Rx.Observable.ajax.getJSON(`localhost:3000/Test`)
         .filter(filterCongressCritters('D'))
-        .map(sendGraphObs)
-        // .catch(error => console.error(error))
+        .map(mapGraph)
+        // .catch(error => console.error(error)) -> need to add error handling
     )
 }
 
+/* Undefined for some reason ...? */
+console.log('STORE',{Store})
+// Store.dispatch({type: 'FETCH_GRAPH'})
 
 function filterCongressCritters(party: string): any {
   return (critter) => {
@@ -35,10 +27,10 @@ function filterCongressCritters(party: string): any {
   }
 }
 
-function sendGraphObs(result){
-  console.log('sendGraphObs',result)
+function mapGraph(result){
+  console.log('mapGraph',result)
   return {
-    type: 'FETCH_GRAPH_RESPONSE',
+    type: 'FETCH_GRAPH_FULFILLED',
     payload: result
   }
 }
