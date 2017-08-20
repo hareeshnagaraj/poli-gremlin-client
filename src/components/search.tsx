@@ -10,7 +10,10 @@ export function Search(props: SearchProps){
   return (
     <div>
       <h1> {props.input} </h1>
-      <input type="search">Search Graph</input>
+      <input/> <input/>
+      <p> What do you want to search for today?</p>
     </div>
   )
 }
+
+// type="search">Search Graph</input>

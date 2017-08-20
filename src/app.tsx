@@ -5,7 +5,7 @@ import { Provider } from 'react-redux';
 
 import {Store} from './state/store'
 import {Greeting,Search} from './components'
-import {Graph, graph,options,events} from './components/visualizer'
+import {Graph,graph,options,events} from './components/visualizer'
 import {Routes} from './routes'
 
 
@@ -28,6 +28,8 @@ function NetGraphEl(){
 
 
 const headerStyles = { background: 'blue', color: 'white', margin: '0 auto' }
+const searchStyles = { background: 'grey', margin: '0 auto' }
+
 const rootElement = document.getElementById('root') as HTMLElement
 
 ReactDOM.render(
@@ -38,7 +40,10 @@ ReactDOM.render(
       </div>
       <div>
         <App />
-        <p> What do you want to search for today?</p>
+      </div>
+
+      <div style={searchStyles}>
+        <Search input='heyo'/>
       </div>
       <div>
         <NetGraphEl />

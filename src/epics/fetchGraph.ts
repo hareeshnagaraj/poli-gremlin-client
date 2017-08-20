@@ -1,7 +1,7 @@
 import * as Rx from 'rxjs';
 
 import {Store} from '../state/store'
-import {fetchGraph,fetchGraphFulfilled} from '../actions'
+import {fetchGraphFulfilled} from '../actions'
 
 
 /* Epic is response for action dispatch */
@@ -15,7 +15,6 @@ export const fetchGraphEpic = (action$, Store) => {
     )
 }
 
-
 /* Not being properly passed to filter function as observable? */
 function filterCongressCritters(party: string): any {
   return (critter) => {
@@ -24,6 +23,7 @@ function filterCongressCritters(party: string): any {
   }
 }
 
+/* epicError can be abstracted out to the actions module as well */
 function epicError(error){
   return Rx.Observable.of({
     type: 'GRAPH_ERROR',
