@@ -11,9 +11,16 @@ const port = process.env.PORT || 3000
 const eventHandlers = require('./eventHandlers')
 
 app.enable('trust proxy');
+
+app.use((req,res,next) => {
+  res.header("Access-Control-Allow-Origin", "*")
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept")
+  next()
+})
+
 app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.static(path.resolve(__dirname, '../', 'public')));
+app.use(bodyParser.urlencoded({ extended: true }))
+app.use(express.static(path.resolve(__dirname, '../', 'public')))
 app.use(errorHandler)
 
 // const options = {
@@ -29,8 +36,7 @@ app.use(errorHandler)
 
 app.get('/', (req, res) => {
   console.log('sup dawg')
-  // res.send('hello world!')
-  res.sendFile(path.resolve(__dirname, '../', 'public', 'index.html'));
+  res.sendFile(path.resolve(__dirname, '../', 'public', 'index.html'))
 });
 
 app.use('/test', eventHandlers)

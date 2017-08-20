@@ -6,7 +6,6 @@ import { Provider } from 'react-redux';
 import {Store} from './state/store'
 import {Greeting,Search} from './components'
 import {Graph, graph,options,events} from './components/visualizer'
-import {graphDataObservable} from './epics'
 import {Routes} from './routes'
 
 

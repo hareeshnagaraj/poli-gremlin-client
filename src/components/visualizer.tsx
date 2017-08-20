@@ -1,38 +1,23 @@
 import * as React from 'react'
 import * as Graph from 'react-graph-vis'
 
-import {graphDataObservable,graphData} from '../epics'
+import {graphData} from '../epics'
 import {Store} from '../state/store'
 
-// figure out a way to turn the observable into a regular object
-  //call the redux state store instead of the observables!
+/* sync fetch and retreive latest state tree
+  way to turn the observable into a regular object
+  call the redux state store instead of the observables
+*/
 
-const graphNodes = []
-graphData.forEach(node => graphNodes.push(node))
-console.log('Get store state',Store.getState(),Store)
-
-function dynamicNodes(obsNodes): any[]{
-  return obsNodes
+function retrieveGraphState(): any {
+  // setInterval(Store.dispatch({type: 'FETCH_GRAPH'}),1000)
+  Store.dispatch({type: 'FETCH_GRAPH'})
+  console.log('STORE STATE', Store.getState())
+  return Store.getState()//subscribe()
 }
 
-// const graph = {
-//   nodes: dynamicNodes()[0],
-//   edges: [
-//       {from: 1, to: 2},
-//       {from: 1, to: 3},
-//       {from: 2, to: 4},
-//       {from: 2, to: 5}
-//     ]
-// };
-
 const graph = {
-  nodes: [
-      {id: 1, label: 'Node 1', color: '#e04141'},
-      {id: 2, label: 'Node 2', color: '#e09c41'},
-      {id: 3, label: 'Node 3', color: '#e0df41'},
-      {id: 4, label: 'Node 4', color: '#7be041'},
-      {id: 5, label: 'Node 5', color: '#41e0c9'}
-    ],
+  nodes: retrieveGraphState(),
   edges: [
       {from: 1, to: 2},
       {from: 1, to: 3},
@@ -40,6 +25,22 @@ const graph = {
       {from: 2, to: 5}
     ]
 };
+
+// const graph = {
+//   nodes: [
+//       {id: 1, label: 'Node 1', color: '#e04141'},
+//       {id: 2, label: 'Node 2', color: '#e09c41'},
+//       {id: 3, label: 'Node 3', color: '#e0df41'},
+//       {id: 4, label: 'Node 4', color: '#7be041'},
+//       {id: 5, label: 'Node 5', color: '#41e0c9'}
+//     ],
+//   edges: [
+//       {from: 1, to: 2},
+//       {from: 1, to: 3},
+//       {from: 2, to: 4},
+//       {from: 2, to: 5}
+//     ]
+// };
 
 const options = {
     layout: {
@@ -58,6 +59,7 @@ const events = {
 
 export {Graph,graph,options,events}
 
+/* Strict TS
 
 export interface GraphProps { graph: object; options: object; events: object; }
 
@@ -68,3 +70,5 @@ export function NetworkGraph(props: GraphProps){
     </div>
   )
 }
+
+*/
