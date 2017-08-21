@@ -5,6 +5,7 @@ import { Provider } from 'react-redux';
 
 import {Store} from './state/store'
 import {Greeting,Search} from './components'
+//need to import {RateItem} from './components' => will act as a container component
 import {Graph,graph,options,events} from './components/visualizer'
 import {Routes} from './routes'
 
@@ -31,6 +32,8 @@ const headerStyles = { background: 'blue', color: 'white', margin: '0 auto' }
 const searchStyles = { background: 'grey', margin: '0 auto' }
 
 const rootElement = document.getElementById('root') as HTMLElement
+
+// <RateItem />
 
 ReactDOM.render(
   <Provider store={Store}>

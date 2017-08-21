@@ -1,7 +1,8 @@
 import * as React from 'react'
 import * as Graph from 'react-graph-vis'
+import {connect} from 'react-redux'
 
-import {graphData} from '../epics'
+
 import {Store} from '../state/store'
 
 /* sync fetch and retreive latest state tree
@@ -9,15 +10,41 @@ import {Store} from '../state/store'
   call the redux state store instead of the observables
 */
 
-function retrieveGraphState(): any {
-  // setInterval(Store.dispatch({type: 'FETCH_GRAPH'}),1000)
-  Store.dispatch({type: 'FETCH_GRAPH'})
-  console.log('STORE STATE', Store.getState())
-  return Store.getState()//subscribe()
+const GraphState = {
+  nodes: []
 }
 
+function retrieveGraphState(): any {
+  Store.dispatch({type: 'FETCH_GRAPH'})
+  console.log('STORE STATE', Store.getState() )
+  return Store.getState()
+}
+
+/* convert state tree format to proper node format (map func) */
+function updateGraphState(): any{
+  Store.subscribe(() => {
+    GraphState.nodes.push(Store.getState())
+  })
+  return GraphState
+}
+
+function wrangleGraphData(data){
+  console.log('wrangling',data,data.graphReducer,data.graphReducer.graph)
+  if(data.graphReducer.graph){
+    console.log('hey we wrangling')
+    return data.graphReducer.graph.map(node => {
+      return {id: node.id[0].id, label: `${node.first_name[0].value + node.last_name[0].value}`, color: '#e04141'}
+    })
+  }
+  console.error('Graph property is not showing up')
+}
+
+updateGraphState()
+const newGraph = wrangleGraphData(retrieveGraphState())
+console.log('Graph post wrangling!',newGraph,GraphState.nodes[0].graphReducer)
+
 const graph = {
-  nodes: retrieveGraphState(),
+  nodes: GraphState,
   edges: [
       {from: 1, to: 2},
       {from: 1, to: 3},

@@ -49,3 +49,8 @@ https://github.com/bvaughn/redux-search
 
 * Connecting state store to the view layer
     can use react-redux
+
+## React-Redux
+
+  * Provides bindings for the React virtual DOM views, and the redux state tree
+  * Good Tutorial: http://www.sohamkamani.com/blog/2017/03/31/react-redux-connect-explained/

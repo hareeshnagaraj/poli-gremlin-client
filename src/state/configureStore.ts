@@ -4,6 +4,7 @@ import { rootEpic, rootReducer } from './root'
 
 export const epicMiddleware = createEpicMiddleware(rootEpic)
 
+/* pass an initalize store object as 2nd argument to store config */
 export function configureStore() {
   const store = createStore(
     rootReducer,

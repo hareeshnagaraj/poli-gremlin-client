@@ -7,17 +7,15 @@ import {fetchGraph} from '../../actions'
 //   activeGraphs: graphData || null
 // }
 
-const defaultGraphState = {
-}
+const defaultGraphState = {}
 
-export default function graphReducer(state = defaultGraphState, action){
+export function graphReducer(state = defaultGraphState, action){
   switch(action.type) {
     // case 'FETCH_GRAPH':
     //   console.log('action obj!',action, Object.assign({},state.activeGraphs))
     //   return //Object.assign({},state.activeGraphs)
     case 'FETCH_GRAPH_FULFILLED':
-      console.log('fetching dawg',action)
-      return action.payload
+      return state['graph'] = action.payload
     default:
       return state
   }
