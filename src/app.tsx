@@ -3,11 +3,11 @@ import * as ReactDOM from 'react-dom'
 import { Provider } from 'react-redux';
 // import { browserHistory } from 'react-router-dom'
 
-import {Store} from './state/store'
-import {Greeting,Search} from './components'
+import { Store } from './state/store'
+import { Greeting, Search, Rating } from './components'
 //need to import {RateItem} from './components' => will act as a container component
-import {Graph,graph,options,events} from './components/visualizer'
-import {Routes} from './routes'
+import { Graph,graph,options,events } from './components/visualizer'
+import { Routes } from './routes'
 
 
 function App() {
@@ -44,7 +44,9 @@ ReactDOM.render(
       <div>
         <App />
       </div>
-
+      <div>
+        <Rating />
+      </div>
       <div style={searchStyles}>
         <Search input='heyo'/>
       </div>

@@ -14,6 +14,16 @@ const GraphState = {
   nodes: []
 }
 
+async function graphController(){
+  const latestGraphData = await retrieveGraphState()
+
+  console.log(latestGraphData)
+
+  //.then(data => data.graphReducer.graph)
+
+  return wrangleGraphData(latestGraphData)
+}
+
 function retrieveGraphState(): any {
   Store.dispatch({type: 'FETCH_GRAPH'})
   console.log('STORE STATE', Store.getState() )
@@ -39,12 +49,17 @@ function wrangleGraphData(data){
   console.error('Graph property is not showing up')
 }
 
-updateGraphState()
-const newGraph = wrangleGraphData(retrieveGraphState())
-console.log('Graph post wrangling!',newGraph,GraphState.nodes[0].graphReducer)
+// updateGraphState()
+
+// const newGraph = wrangleGraphData(retrieveGraphState())
+// console.log('Graph post wrangling!',newGraph,GraphState.nodes[0].graphReducer)
+
+let nodes = []
+
+graphController().then
 
 const graph = {
-  nodes: GraphState,
+  nodes: nodes,
   edges: [
       {from: 1, to: 2},
       {from: 1, to: 3},

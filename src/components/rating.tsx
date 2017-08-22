@@ -6,7 +6,7 @@
   Good way to text redux state store connection -> increment,decrement examples
 
   https://github.com/reactjs/redux/blob/master/docs/basics/UsageWithReact.md
-  
+
 */
 
 import * as React from 'react'
@@ -17,7 +17,7 @@ import {Store} from '../state/store'
 const RateItem = ({item, incrementRating, decrementRating}) => {
   return (
     <div>
-      {item.rating || 0}
+      <p>{item.rating || 0}</p>
       <span onClick={incrementRating}> + </span>
       <span onClick={decrementRating}> - </span>
     </div>
@@ -41,7 +41,7 @@ const mapDispatchToProps = dispatch => {
   }
 }
 
-export default connect(
+export const Rating = connect(
   mapStateToProps,
   mapDispatchToProps
 )(RateItem)

@@ -7,11 +7,17 @@
 
 ## Functional React
 https://facebook.github.io/react/docs/components-and-props.html
+https://medium.com/missive-app/45-faster-react-functional-components-now-3509a668e69f
+^benefits of stateless react - dont need to mount and unmount, purity, traditional functional benefits
+
+https://www.codementor.io/mz026/getting-started-with-react-redux-an-intro-8r6kurcxf
 
 ## Visualizing Graphs
 https://www.npmjs.com/package/react-graph-vis
 http://visjs.org/network_examples.html
 https://medium.com/ninjaconcept/interactive-dynamic-force-directed-graphs-with-d3-da720c6d7811
+
+https://medium.com/@Elijah_Meeks/interactive-applications-with-react-d3-f76f7b3ebc71
 
 
 ## Stream Parsing JSON

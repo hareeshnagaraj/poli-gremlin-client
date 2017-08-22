@@ -1,11 +1,10 @@
 import * as Rx from 'rxjs';
 
-import {Store} from '../state/store'
 import {fetchGraphFulfilled} from '../actions'
 
 
 /* Epic is response for action dispatch */
-export const fetchGraphEpic = (action$, Store) => {
+export const fetchGraphEpic = (action$, store) => {
   return action$.ofType('FETCH_GRAPH')
     .switchMap((action: any) =>
       Rx.Observable.ajax.getJSON(`http://127.0.0.1:3000/Test`)

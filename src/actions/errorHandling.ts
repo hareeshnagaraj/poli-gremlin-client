@@ -11,3 +11,10 @@ export function graphError(errorObj) {
     payload: errorObj
   }
 }
+
+export function ratingError(errorObj) {
+  return {
+    type: 'RATING_ERROR',
+    payload: errorObj
+  }
+}

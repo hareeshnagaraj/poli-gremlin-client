@@ -31,6 +31,6 @@ function filterCongressCritters(party: string): any {
   }
 }
 
-function handleObsErr(err){
+function handleObsErr(err): void {
   console.error(`Stream Error: ${err}`)
 }
