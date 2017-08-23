@@ -14,15 +14,19 @@ const GraphState = {
   nodes: []
 }
 
-async function graphController(){
-  const latestGraphData = await retrieveGraphState()
-
-  console.log(latestGraphData)
-
-  //.then(data => data.graphReducer.graph)
-
-  return wrangleGraphData(latestGraphData)
-}
+// async function graphController(){
+//   const latestGraphData = await retrieveGraphState()
+//
+//   console.log(latestGraphData,
+//     latestGraphData
+//       .then(data => console.log(data))
+//       .catch(err => console.error(err))
+//   )
+//
+//   //.then(data => data.graphReducer.graph)
+//
+//   return wrangleGraphData(latestGraphData)
+// }
 
 function retrieveGraphState(): any {
   Store.dispatch({type: 'FETCH_GRAPH'})
@@ -31,12 +35,29 @@ function retrieveGraphState(): any {
 }
 
 /* convert state tree format to proper node format (map func) */
-function updateGraphState(): any{
-  Store.subscribe(() => {
-    GraphState.nodes.push(Store.getState())
+// function updateGraphState(): any{
+//   Store.subscribe(() => {
+//     GraphState.nodes.push(Store.getState())
+//   })
+//   return GraphState
+// }
+
+async function updateGraphState(){
+  Store.dispatch({type: 'FETCH_GRAPH'})
+
+  const data = await Store.subscribe(() => {
+    const latestGraphData = Store.getState()
+    GraphState.nodes.push(latestGraphData['graphReducer'].graph)
   })
+
   return GraphState
 }
+
+updateGraphState()
+.then(data => console.log('data?',data))
+.catch(err => console.error(err))
+
+console.log('GRAPH STATE!', GraphState)
 
 function wrangleGraphData(data){
   console.log('wrangling',data,data.graphReducer,data.graphReducer.graph)
@@ -49,33 +70,9 @@ function wrangleGraphData(data){
   console.error('Graph property is not showing up')
 }
 
-// updateGraphState()
-
-// const newGraph = wrangleGraphData(retrieveGraphState())
-// console.log('Graph post wrangling!',newGraph,GraphState.nodes[0].graphReducer)
-
-let nodes = []
-
-graphController().then
-
-const graph = {
-  nodes: nodes,
-  edges: [
-      {from: 1, to: 2},
-      {from: 1, to: 3},
-      {from: 2, to: 4},
-      {from: 2, to: 5}
-    ]
-};
 
 // const graph = {
-//   nodes: [
-//       {id: 1, label: 'Node 1', color: '#e04141'},
-//       {id: 2, label: 'Node 2', color: '#e09c41'},
-//       {id: 3, label: 'Node 3', color: '#e0df41'},
-//       {id: 4, label: 'Node 4', color: '#7be041'},
-//       {id: 5, label: 'Node 5', color: '#41e0c9'}
-//     ],
+//   nodes: GraphState,
 //   edges: [
 //       {from: 1, to: 2},
 //       {from: 1, to: 3},
@@ -83,6 +80,22 @@ const graph = {
 //       {from: 2, to: 5}
 //     ]
 // };
+
+const graph = {
+  nodes: [
+      {id: 1, label: 'Node 1', color: '#e04141'},
+      {id: 2, label: 'Node 2', color: '#e09c41'},
+      {id: 3, label: 'Node 3', color: '#e0df41'},
+      {id: 4, label: 'Node 4', color: '#7be041'},
+      {id: 5, label: 'Node 5', color: '#41e0c9'}
+    ],
+  edges: [
+      {from: 1, to: 2},
+      {from: 1, to: 3},
+      {from: 2, to: 4},
+      {from: 2, to: 5}
+    ]
+};
 
 const options = {
     layout: {

@@ -1,5 +1,5 @@
 {
-  "name": "poli-gremlin-client",
+  "name": "poli-gremlin-client-api",
   "version": "1.0.0",
   "description": "Generation of congressional graph through gremlin-client npm",
   "main": "app.js",

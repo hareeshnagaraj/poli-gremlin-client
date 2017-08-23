@@ -6,6 +6,8 @@ work/
 build/
 config/
 
+__snapshots__/
+
 old/
 
 # Logs

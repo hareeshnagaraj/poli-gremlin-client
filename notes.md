@@ -60,3 +60,22 @@ https://github.com/bvaughn/redux-search
 
   * Provides bindings for the React virtual DOM views, and the redux state tree
   * Good Tutorial: http://www.sohamkamani.com/blog/2017/03/31/react-redux-connect-explained/
+
+
+## Testing React
+  * https://hackernoon.com/a-guide-to-tdd-a-react-redux-todolist-app-part-1-b8a200bb7091
+  * https://rjzaworski.com/2016/12/testing-typescript-with-jest
+
+  "jest": {
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js"
+    ],
+    "transform": {
+      "^.+\\.(ts|tsx)$": "<rootDir>/preprocessor.js"
+    },
+    "testMatch": [
+      "**/__tests__/*.(ts|tsx|js)"
+    ]
+  },

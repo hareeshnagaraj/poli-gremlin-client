@@ -7,12 +7,23 @@
     "start": "node ./server",
     "build-prod": "webpack --optimize-minimize",
     "build-dev": "webpack --progress --colors",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "dev": "webpack-dev-server",
     "docker-build": "sudo docker build -t poli-gremlin-client .",
     "docker-run": "sudo docker run -it -p 127.0.0.1:3000:3000 poli-gremlin-client"
   },
-  "author": "",
+  "jest": {
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js"
+    ],
+    "transform": {
+      "\\.(ts|tsx)$": "<rootDir>/node_modules/ts-jest/preprocessor.js"
+    },
+    "testRegex": "/*tests*/.*\\.(ts|tsx|js)$"
+  },
+  "author": "Mike Hathaway",
   "license": "ISC",
   "dependencies": {
     "@types/body-parser": "^1.16.4",
@@ -39,12 +50,18 @@
     "spdy": "^3.4.7"
   },
   "devDependencies": {
+    "@types/jest": "^20.0.7",
     "awesome-typescript-loader": "^3.2.2",
     "css-loader": "^0.28.4",
+    "enzyme": "^2.9.1",
     "file-loader": "^0.11.2",
+    "jest": "^20.0.4",
+    "react-addons-test-utils": "^15.6.0",
+    "redux-mock-store": "^1.2.3",
     "remote-redux-devtools": "^0.5.12",
     "source-map-loader": "^0.2.1",
     "style-loader": "^0.18.2",
+    "ts-jest": "^20.0.10",
     "ts-loader": "^2.3.2",
     "typescript": "^2.4.2",
     "webpack": "^3.5.4",
