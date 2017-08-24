@@ -15,11 +15,12 @@ import {connect} from 'react-redux'
 import {Store} from '../state/store'
 
 const RateItem = ({item, incrementRating, decrementRating}) => {
+  console.log({item, incrementRating, decrementRating})
+  // item currently undefined       <p>{item.rating || 0}</p>
   return (
     <div>
-      <p>{item.rating || 0}</p>
-      <span onClick={incrementRating}> + </span>
-      <span onClick={decrementRating}> - </span>
+      <span onClick={incrementRating}><button> + </button></span>
+      <span onClick={decrementRating}><button> - </button></span>
     </div>
   )
 }
@@ -32,9 +33,12 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    incrementRating : () => dispatch({
-      type : 'RATE_ITEM_UP'
-    }),
+    incrementRating : () => {
+      console.log('heyo')
+      return dispatch({
+        type : 'RATE_ITEM_UP'
+      })
+    },
     decrementRating : () => dispatch({
       type : 'RATE_ITEM_DOWN'
     })

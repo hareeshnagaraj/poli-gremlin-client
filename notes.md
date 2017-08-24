@@ -24,6 +24,8 @@ https://medium.com/@Elijah_Meeks/interactive-applications-with-react-d3-f76f7b3e
 https://github.com/Reactive-Extensions/RxJS-DOM/blob/master/doc/operators/getjson.md
 https://preview.npmjs.com/package/rx-dom
 
+* Async Actions + Typescript
+  --> https://rjzaworski.com/2016/09/typescript-redux-async-actions
 
 ## Redux
 https://github.com/piotrwitek/react-redux-typescript-guide
@@ -65,17 +67,4 @@ https://github.com/bvaughn/redux-search
 ## Testing React
   * https://hackernoon.com/a-guide-to-tdd-a-react-redux-todolist-app-part-1-b8a200bb7091
   * https://rjzaworski.com/2016/12/testing-typescript-with-jest
-
-  "jest": {
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js"
-    ],
-    "transform": {
-      "^.+\\.(ts|tsx)$": "<rootDir>/preprocessor.js"
-    },
-    "testMatch": [
-      "**/__tests__/*.(ts|tsx|js)"
-    ]
-  },
+      --> https://github.com/rjz/typescript-react-redux

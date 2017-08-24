@@ -1,5 +1,5 @@
 export * from './dashboard'
-export * from './visualizer'
+export * from './containers/visualizer'
 export * from './search'
 export * from './message'
 export * from './rating'
