@@ -1,7 +1,6 @@
 // import from 'redux-observable'
 import {Store} from '../store'
 import {graphData} from '../../epics'
-import {fetchGraph} from '../../actions'
 
 // const defaultGraphState = {
 //   activeGraphs: graphData || null

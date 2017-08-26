@@ -7,6 +7,8 @@
 
   https://github.com/reactjs/redux/blob/master/docs/basics/UsageWithReact.md
 
+  http://blog.tylerbuchea.com/super-simple-react-redux-application-example/
+
 */
 
 import * as React from 'react'
@@ -14,13 +16,14 @@ import {connect} from 'react-redux'
 
 import {Store} from '../state/store'
 
-const RateItem = ({item, incrementRating, decrementRating}) => {
-  console.log({item, incrementRating, decrementRating})
+const RateItem = (props = {rating, incrementRating, decrementRating}) => {
+  console.log(this,{rating, incrementRating, decrementRating},this.props)
   // item currently undefined       <p>{item.rating || 0}</p>
   return (
     <div>
-      <span onClick={incrementRating}><button> + </button></span>
-      <span onClick={decrementRating}><button> - </button></span>
+      {this.props.rating ? this.props.rating : 0}
+      <span onClick={props.incrementRating}><button> + </button></span>
+      <span onClick={props.decrementRating}><button> - </button></span>
     </div>
   )
 }
@@ -34,7 +37,7 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
   return {
     incrementRating : () => {
-      console.log('heyo')
+      console.log('increased rating')
       return dispatch({
         type : 'RATE_ITEM_UP'
       })

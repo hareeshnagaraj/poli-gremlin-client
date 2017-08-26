@@ -19,6 +19,10 @@ https://medium.com/ninjaconcept/interactive-dynamic-force-directed-graphs-with-d
 
 https://medium.com/@Elijah_Meeks/interactive-applications-with-react-d3-f76f7b3ebc71
 
+https://www.capellaspace.com/
+  --> cool graph visualization
+    - implement a full page 3d graphical view
+    - simple overlay of search bar, as well as pop up boxes, and graph manipulation / rating tools
 
 ## Stream Parsing JSON
 https://github.com/Reactive-Extensions/RxJS-DOM/blob/master/doc/operators/getjson.md
