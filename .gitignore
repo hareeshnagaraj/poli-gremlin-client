@@ -1,4 +1,7 @@
-<<<<<<< HEAD
+# API gitignores
+api/server-conf/remote.yaml
+api/server-conf/politigraph-app/target
+
 node_modules/
 package-lock.json
 
