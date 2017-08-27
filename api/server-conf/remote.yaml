@@ -1,0 +1,5 @@
+hosts: [-]
+port: 8182
+username: -
+password: -
+serializer: { className: org.apache.tinkerpop.gremlin.driver.ser.GryoMessageSerializerV1d0, config: { serializeResultToString: true }}
