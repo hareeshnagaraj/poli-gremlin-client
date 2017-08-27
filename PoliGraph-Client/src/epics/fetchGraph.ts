@@ -3,8 +3,10 @@ import * as Rx from 'rxjs';
 import {fetchGraphFulfilled} from '../actions'
 
 /* flatmap / switch map operate on each value in observable stream, while reducing into a single observable
-  that can than be subscribed to ->
+   that can than be subscribed to ->
     need to be susbscribing in epic middleware, or is that abstracted away as well?
+
+    Integrate with gremlin-client -> https://github.com/davebshow/gremlin-client
 
 */
 
@@ -15,6 +17,7 @@ export const fetchGraphEpic = (action$, store) => {
       Rx.Observable.ajax.getJSON(`http://127.0.0.1:3000/Test`)
         // .filter(filterCongressCritters('D'))
         .map(fetchGraphFulfilled)
+        // .flatMap(fetchGraphFulfilled) -> modify taken callback to match type signature
         .catch(epicError)
     )
 }

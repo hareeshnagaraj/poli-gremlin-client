@@ -3,10 +3,10 @@ import * as TestUtils from 'react-addons-test-utils'
 
 import { createStore } from 'redux'
 
-import { Greeting } from '../dashboard'
-import { graphReducer } from '../../state/reducers/graphState'
+import { Greeting } from '../components'
+import { graphReducer } from '../state/reducers/graphState'
 
-import { Graph,graph,options,events } from '../containers/visualizer'
+import { Graph,graph,options,events } from '../components'
 
 /* Inspired by: https://rjzaworski.com/2016/12/testing-typescript-with-jest */
 

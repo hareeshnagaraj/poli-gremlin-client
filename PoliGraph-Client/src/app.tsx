@@ -8,6 +8,9 @@ import { Greeting, Search, Rating } from './components'
 //need to import {RateItem} from './components' => will act as a container component
 import { Graph,graph,options,events } from './components/containers/visualizer'
 
+import janusEventHandler from './external'
+
+janusEventHandler()
 
 function App() {
   return (
