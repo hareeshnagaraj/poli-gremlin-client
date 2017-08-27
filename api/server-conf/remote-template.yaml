@@ -1,5 +1,5 @@
-hosts: [-]
+hosts: [40.112.250.222]
 port: 8182
-username: -
-password: -
+username: politigraphadmin
+password: fucktrump123!@3
 serializer: { className: org.apache.tinkerpop.gremlin.driver.ser.GryoMessageSerializerV1d0, config: { serializeResultToString: true }}
