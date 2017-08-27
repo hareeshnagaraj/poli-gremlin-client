@@ -18,24 +18,6 @@ const GraphState = {
   nodes: []
 }
 
-let graphState
-
-function graphController(){
-  const latestGraphData = retrieveGraphState()
-  // console.log('latestGraphData!',latestGraphData, retrieveGraphState)
-
-  // console.log(latestGraphData,
-  //   latestGraphData
-  //     .then(data => console.log(data))
-  //     .catch(err => console.error(err))
-  // )
-
-  //.then(data => data.graphReducer.graph)
-  graphState = latestGraphData
-
-  // return setTimeout(wrangleGraphData(latestGraphData),10000)
-}
-graphController()
 
 function retrieveGraphState(): any {
   Store.dispatch({type: 'FETCH_GRAPH'})
@@ -44,40 +26,16 @@ function retrieveGraphState(): any {
 }
 
 function wrangleGraphData(data){
+  console.log('pre wrangling!',data.graphReducer.graph)
   if(data.graphReducer.graph){
     return data.graphReducer.graph.map(node => {
-        console.log('node!',node)
+      console.log('node!',node)
       return {id: node.id, label: `${node.properties.first_name[0].value + node.properties.last_name[0].value}`, color: '#e04141'}
     })
   }
   console.error('Graph property is not showing up')
 }
 
-async function updateGraphState(){
-  Store.dispatch({type: 'FETCH_GRAPH'})
-
-  const data = await Store.subscribe(() => {
-    graphState = Store.getState()
-    console.log('knee deep',graphState, Store.getState())
-    // const latestGraphData = Store.getState()
-    // GraphState.nodes.push(latestGraphData['graphReducer'].graph)
-  })
-
-  return graphState
-}
-
-// updateGraphState()
-// .then(data => console.log('data?',data))
-// .catch(err => console.error(err))
-
-const graphInterval = setInterval(function() {
-    if (graphState) {
-        clearInterval(graphInterval);
-        console.log('current graph state: ',graphState,Array.isArray(wrangleGraphData(graphState)));
-
-        return wrangleGraphData(graphState)
-    }
-}, 2500);
 
 const SampleGraph = {
   nodes: [
@@ -95,10 +53,8 @@ const SampleGraph = {
     ]
 };
 
-console.log(graphInterval)
-
 const graph = {
-  nodes: graphInterval ? graphInterval : SampleGraph,
+  nodes: wrangleGraphData(retrieveGraphState()) ? wrangleGraphData(retrieveGraphState()) : SampleGraph,
   edges: [
       {from: 1, to: 2},
       {from: 1, to: 3},

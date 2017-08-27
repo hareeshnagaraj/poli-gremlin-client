@@ -2,6 +2,11 @@ import * as Rx from 'rxjs';
 
 import {fetchGraphFulfilled} from '../actions'
 
+/* flatmap / switch map operate on each value in observable stream, while reducing into a single observable
+  that can than be subscribed to ->
+    need to be susbscribing in epic middleware, or is that abstracted away as well?
+
+*/
 
 /* Epic is response for action dispatch */
 export const fetchGraphEpic = (action$, store) => {

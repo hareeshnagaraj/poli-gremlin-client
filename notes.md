@@ -24,12 +24,15 @@ https://www.capellaspace.com/
     - implement a full page 3d graphical view
     - simple overlay of search bar, as well as pop up boxes, and graph manipulation / rating tools
 
-## Stream Parsing JSON
+## Streaming Operations
 https://github.com/Reactive-Extensions/RxJS-DOM/blob/master/doc/operators/getjson.md
 https://preview.npmjs.com/package/rx-dom
 
 * Async Actions + Typescript
   --> https://rjzaworski.com/2016/09/typescript-redux-async-actions
+
+* Flatmap vs Switchmap guide
+  --> https://medium.com/@w.dave.w/becoming-more-reactive-with-rxjs-flatmap-and-switchmap-ccd3fb7b67fa  
 
 ## Redux
 https://github.com/piotrwitek/react-redux-typescript-guide
@@ -67,6 +70,8 @@ https://github.com/bvaughn/redux-search
   * Provides bindings for the React virtual DOM views, and the redux state tree
   * Good Tutorial: http://www.sohamkamani.com/blog/2017/03/31/react-redux-connect-explained/
 
+    https://github.com/reactjs/redux/blob/master/docs/basics/UsageWithReact.md
+    http://blog.tylerbuchea.com/super-simple-react-redux-application-example/
 
 ## Testing React
   * https://hackernoon.com/a-guide-to-tdd-a-react-redux-todolist-app-part-1-b8a200bb7091

@@ -32,10 +32,6 @@ const searchStyles = { background: 'grey', margin: '0 auto' }
 
 const rootElement = document.getElementById('root') as HTMLElement
 
-// <RateItem />
-//
-// <NetGraphEl />
-
 
 ReactDOM.render(
   <Provider store={Store}>
@@ -49,12 +45,12 @@ ReactDOM.render(
       <div>
         <Rating />
       </div>
-
       <div style={searchStyles}>
-        <Search input='heyo'/>
+        <Search input='Search for a node'/>
       </div>
 
       <div>
+        <NetGraphEl />
       </div>
 
     </div>
