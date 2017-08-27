@@ -5,6 +5,9 @@ import org.apache.tinkerpop.gremlin.driver.Cluster;
 import org.apache.tinkerpop.gremlin.driver.Result;
 import org.apache.tinkerpop.gremlin.driver.ResultSet;
 import org.apache.tinkerpop.gremlin.structure.Property;
+import org.apache.tinkerpop.gremlin.structure.Vertex;
+import org.apache.tinkerpop.gremlin.structure.VertexProperty;
+import org.janusgraph.graphdb.database.StandardJanusGraph;
 
 /**
  * Hello world!
@@ -22,18 +25,28 @@ public class App
             System.out.println( "2) Created client, initializing..." );
             client.init();
             System.out.println( "3) Initialized client" );
-            ResultSet results = client.submit("g.V()");
+            ResultSet results = client.submit("graph");
             System.out.println( "4) Submitted results" );
-            results.stream().map(i -> i.get(Integer.class) * 2);
+            results.stream().map(i -> i.get(StandardJanusGraph.class));
 
             // Iterate and print
             System.out.println( "5) Streamed results: " + results.toString());
-            Iterator<Result> iter = results.iterator();
+            Iterator<Result> rIter = results.iterator();
             Result r;
-            while(iter.hasNext())
+            Vertex v;
+            StandardJanusGraph s;
+            while(rIter.hasNext())
             {
-                r = iter.next();
+                r = rIter.next();
                 System.out.println(r.toString());
+                s = (StandardJanusGraph)r.getObject();  // Working on reading these values
+                Iterator<Vertex> vIt = s.vertices();
+
+                while(vIt.hasNext())
+                {
+                    v = vIt.next();
+                }
+                
             }
 
             System.out.println( "6) Finished iterating");

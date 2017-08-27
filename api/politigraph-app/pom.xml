@@ -19,6 +19,11 @@
       <artifactId>gremlin-driver</artifactId>
       <version>3.2.5</version>
     </dependency>
+    <dependency>
+        <groupId>org.janusgraph</groupId>
+        <artifactId>janusgraph-core</artifactId>
+        <version>0.1.1</version>
+    </dependency>
   </dependencies>
   <build>
       <plugins>
