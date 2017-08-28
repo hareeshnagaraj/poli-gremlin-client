@@ -6,7 +6,7 @@ import { createStore } from 'redux'
 import { Greeting } from '../components'
 import { graphReducer } from '../state/reducers/graphState'
 
-import { Graph,graph,options,events } from '../components'
+// import { Graph,graph,options,events } from '../components'
 
 /* Inspired by: https://rjzaworski.com/2016/12/testing-typescript-with-jest */
 
@@ -22,7 +22,7 @@ describe('<Graph />', () => {
   it('renders', () => {
     const store = createStore(graphReducer)
     expect(TestUtils.createRenderer().render(
-      <Graph.default graph={graph} options={options} events={events} />
+      // <Graph.default graph={graph} options={options} events={events} />
       // <Graph label='a counter!' store={store} />
     )).toMatchSnapshot()
   })
