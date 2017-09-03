@@ -81,7 +81,7 @@ const populateMemberInfo = function(memberData)
 			Object.keys(memberData).forEach(
 				function(key) 
 					{
-						if(key != "id")
+						if(key != "id" && memberData[key] != null)
 						{
 							index++;
 							var bindingIdentifier = "x"+index;
