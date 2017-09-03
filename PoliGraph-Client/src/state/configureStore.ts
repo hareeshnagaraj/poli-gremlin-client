@@ -12,7 +12,7 @@ export const epicMiddleware = createEpicMiddleware(rootEpic)
 export function configureStore() {
   const store = createStore(
     rootReducer,
-    applyMiddleware(epicMiddleware,loggerMiddleware)
+    applyMiddleware(epicMiddleware, loggerMiddleware)
   )
 
   return store

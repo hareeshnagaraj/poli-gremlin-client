@@ -13,7 +13,6 @@ export const fetchGraphEpic = (action$, store) => {
     )
 }
 
-/* future addition: import error action */
 function epicError(error){
   return Rx.Observable.of({
     type: 'RATING_ERROR',

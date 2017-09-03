@@ -20,7 +20,7 @@ const sampleData = {
     ],
     links: [
         {source: 'Harry', target: 'Sally'},
-        {source: 'Harry', target: 'Alice'},
+        {source: 'Harry', target: 'Alice'}
     ]
 }
 
@@ -55,11 +55,27 @@ const onMouseOutNode = function(nodeId) {
 const onClickLink = function(nodeId) {
 }
 
+function asyncGraphData(graphData){
+  console.log('analyzing graph object')
+
+  return graphData ? {
+    nodes: graphData,
+    links: [
+        {source: 'RogerWicker', target: "ChristopherMurphy"}
+    ]
+  }
+
+  : sampleData
+}
+
 function GraphVisual({graph,onClickLink}){
+  const asyncGraph = asyncGraphData(wrangleGraphData(graph))
+  console.log('async graph',asyncGraph)
   return (
     <Graph
          id='graph-id' // id is mandatory, if no id is defined rd3g will throw an error
-         data={ graph || sampleData }
+         data={ asyncGraph }
+         onChange={ asyncGraph }
          config={myConfig}
          onClickNode={onClickNode}
          onClickLink={onClickLink}
@@ -71,12 +87,15 @@ function GraphVisual({graph,onClickLink}){
 
 const mapStateToProps = state => {
   return {
-    graph : state //wrangleGraphData(state)
+    graph : state.graphReducer.graph
   }
 }
 
 const mapDispatchToProps = dispatch => {
   return {
+    onFetchGraph : () => dispatch({
+        type : 'FETCH_GRAPH'
+    }),
     onClickLink : () => dispatch({
         type : 'SELECTED_EDGE'
     })
@@ -93,15 +112,16 @@ export const GraphComponent = connect(
 
 
 function wrangleGraphData(data){
-  console.log('pre wrangling!',data)
-  if(data){
+  if(Object.keys(data).length !== 0){
     return data.map(node => {
       console.log('node!',node)
-      return {id: node.id, label: `${node.properties.first_name[0].value + node.properties.last_name[0].value}`, color: '#e04141'}
+      return {uuid: node.id, id: `${node.properties.first_name[0].value + node.properties.last_name[0].value}`, color: '#e04141'}
     })
   }
   console.error('Graph property is not showing up')
 }
+
+/*
 
 function getGraphNodes(state){
   console.log('current state tree!',state,state.graphReducer)
@@ -112,3 +132,5 @@ function getLatestGraph(){
   console.log('hey', wrangleGraphData(currentStateTree))
 }
 const unsubscribe = Store.subscribe(getLatestGraph)
+
+*/

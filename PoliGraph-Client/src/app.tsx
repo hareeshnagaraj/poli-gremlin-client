@@ -11,6 +11,7 @@ import { GraphComponent } from './components/containers/graph'
 
 import janusEventHandler from './external'
 
+/* Initalize the application by setting tcp event listeners to the Janus instance, dispatch initial graph import */
 janusEventHandler()
 Store.dispatch({type: 'FETCH_GRAPH'})
 
