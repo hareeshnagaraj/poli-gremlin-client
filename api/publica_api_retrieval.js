@@ -4,11 +4,15 @@
 
 const Promise = require('bluebird');
 const fs = require('fs');
+const gremlin = require('gremlin-client');
 const Congress = require('propublica-congress-node');
 const uuid = require('uuid');
 
 // Global members
-const client = new Congress(process.env.propublicakey);
+// Make sure you have configured a local environment variable with the ProPublicaApi Key
+// Update ~/.bash_profile with : export propublicakey=<yourkey>
+const ProPublicaClient = new Congress(process.env.propublicakey);
+const GremlinClient = gremlin.createClient(8182, '40.112.250.222');
 
 // Sleep time expects milliseconds
 function sleep (time) {
@@ -25,7 +29,7 @@ const populateCongressMembers = function(congressSeshNumber, chamber)
 		throw Error('Invalid chamber ' + chamber);
 	}
 
-	client.memberLists({
+	ProPublicaClient.memberLists({
 		congressNumber: congressSeshNumber,
 		chamber: chamber
 	}).then(function(res, error){
@@ -37,43 +41,88 @@ const populateCongressMembers = function(congressSeshNumber, chamber)
 	});
 };
 
-const populateMemberInfo = function(x)
+/*
+ * Add a graph vertex for a given member of congress
+ * 
+ * House Member Properties
+ * 
+ * firstName
+ * lastName
+ * dateOfBirth
+ * party
+ * nextElection
+ * totalVotes
+ * missedVotes
+ * phone
+ * fax
+ * state
+ * district
+ * missedVotesPercent
+ * votesWithPartyPercent
+ * domain
+ * 
+ * TODO: Senate Member Properties
+ * */
+const populateMemberInfo = function(memberData)
 {
-	// Get delay
-    var delay = (Math.floor(Math.random() * 800)) + 100;
+	var queryString = "graph.addVertex('firstName', x1, 'lastName', x2, 'dateOfBirth', x3, 'party', x4, 'nextElection', x5)";
 
-	sleep(delay).then(()=>{
-
-		console.log(x);
-
-		// 9/2/17
-		// Temporarily removing the additional detail requests
-
-		// client.memberBioAndRoles({
-		// 	memberId: x['id']
-		// 	}).then(function(res, error){
-		// 		const data = res['results'][0];
-		// 		console.log(res);
-		// 	})
-		// 	.catch((err => console.error(err)))
+	return new Promise(function (resolve, reject) {
+		try
+		{
+			GremlinQuery({
+					string : queryString,
+					bindings : 
+						{ 
+							x1: memberData['first_name'],
+							x2: memberData['last_name'],
+							x3: memberData['date_of_birth'],
+							x4: memberData['party'],
+							x5: memberData['next_election']
+						}
+				});
+				
+			resolve();
+		}
+		catch(Exception)
+		{
+			reject();
+		}
+    }).catch(()=>{
 	});
 }
 
-// Write a file with the JSON response from ProPublica API
-const writeResponseFile = function(data, apiname, dir)
-{
-	const fileName = dir + '/' + apiname + '_' + uuid.v1() + '.json';
-	console.log('Writing ' + fileName);
+/**
+ * Execute a gremlin query
+ * Accepts an object with bindings and string properties
+ *  var name = "Dean Kaplan";
+	var queryString = "graph.addVertex('name', x1)";
+	var queryBindings = { x1: name };
+	var queryContainer = {
+		string : queryString,
+		bindings : queryBindings
+	};
+ */
 
-	const writeStream = fs.createWriteStream(fileName);
-	writeStream.write(JSON.stringify(data));
-	writeStream.end();
+const GremlinQuery = function(queryContainer)
+{
+	var queryString = queryContainer['string'];
+	var queryBindings = queryContainer['bindings'];
+    GremlinClient.execute(
+	queryString,
+	queryBindings,
+	function(err, results) {
+        if (!err) {
+            console.dir(results, {depth: 5});
+        }
+        else{
+            console.log("Error executing " + queryString);
+        }
+    });
 }
 
-console.log(process.env.propublicakey);
-
 // Testing
-console.log("Populating house members");
 populateCongressMembers(115, 'house');
+
 
 //populateCongressMembers(115, 'senate');
