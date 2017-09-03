@@ -84,14 +84,16 @@ const populateMemberInfo = function(memberData)
 						if(key != "id")
 						{
 							index++;
-							var b = "x"+index;
-							query += "'" + key + "'," + b + ",";
+							var bindingIdentifier = "x"+index;
+							query += "'" + key + "'," + bindingIdentifier + ",";
+							queryBindings[key] = memberData[key];
 						}
 			});
 
 			query = query.substring(0, query.length - 1);
 			query += querySuffix;
 			console.log(query);
+			console.log(queryBindings);
 
 			// GremlinQuery({
 			// 		string : queryString,
