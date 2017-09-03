@@ -1,6 +1,10 @@
 import { createStore, applyMiddleware } from 'redux'
 import { createEpicMiddleware } from 'redux-observable'
+import { createLogger } from 'redux-logger'
 import { rootEpic, rootReducer } from './root'
+
+/* Dev purposes: logs action dispatch and store state over time */
+const loggerMiddleware = createLogger()
 
 export const epicMiddleware = createEpicMiddleware(rootEpic)
 
@@ -8,7 +12,7 @@ export const epicMiddleware = createEpicMiddleware(rootEpic)
 export function configureStore() {
   const store = createStore(
     rootReducer,
-    applyMiddleware(epicMiddleware)
+    applyMiddleware(epicMiddleware, loggerMiddleware)
   )
 
   return store

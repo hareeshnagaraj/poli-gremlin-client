@@ -1,6 +1,15 @@
 # The Challenge
   https://flowingdata.com/2017/04/24/how-disinformation-spreads-in-a-network/
 
+# Future Additions
+  * Create realtime news feed to accompany graph
+
+    Sources:
+      - NYT api
+      - News api
+
+    Steps -> hit api, stream to store, rebuild store, stream to view  
+
 
 ## Knowledge Graph
   Make the reading experience revolve around real-time graphs you can search and interact with.
@@ -17,12 +26,28 @@ https://www.npmjs.com/package/react-graph-vis
 http://visjs.org/network_examples.html
 https://medium.com/ninjaconcept/interactive-dynamic-force-directed-graphs-with-d3-da720c6d7811
 
-https://medium.com/@Elijah_Meeks/interactive-applications-with-react-d3-f76f7b3ebc71
-
 https://www.capellaspace.com/
   --> cool graph visualization
     - implement a full page 3d graphical view
     - simple overlay of search bar, as well as pop up boxes, and graph manipulation / rating tools
+
+* React + Graphs
+  --> https://medium.com/@Elijah_Meeks/interactive-applications-with-react-d3-f76f7b3ebc71
+  --> React adds a signficiant performance hit to rendering
+  --> wrapping a svg component targeted by D3 likely the most performant option
+
+* Force directed graph
+  --> common solution for visualizing graph data
+  --> hooks law or electromagnetism between nodes to determine a stable, symmetrical representation
+  --> O(n^3) rendering
+
+* 3d Visualizing - use react-three-renderer
+  --> https://github.com/toxicFork/react-three-renderer/issues/28
+  --> https://github.com/toxicFork/react-three-renderer
+
+  3d-force-graph npm package provides the required functionality,
+  however, it is not clear how nicely it will play with react.
+
 
 ## Streaming Operations
 https://github.com/Reactive-Extensions/RxJS-DOM/blob/master/doc/operators/getjson.md

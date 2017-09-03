@@ -1,16 +1,20 @@
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
 import { Provider } from 'react-redux';
-// import { browserHistory } from 'react-router-dom'
 
 import { Store } from './state/store'
 import { Greeting, Search, Rating } from './components'
-//need to import {RateItem} from './components' => will act as a container component
-import { Graph,graph,options,events } from './components/containers/visualizer'
+import { GraphComponent } from './components/containers/graph'
 
 import janusEventHandler from './external'
 
-janusEventHandler()
+//const webSocketConn = janusEventHandler()
+
+/* Initalize the application by setting tcp event listeners to the Janus instance, dispatch initial graph import */
+//webSocketConn ? webSocketConn : 'janus connection failed'
+
+Store.dispatch({type: 'FETCH_GRAPH'})
+
 
 function App() {
   return (
@@ -21,20 +25,10 @@ function App() {
 }
 
 
-function NetGraphEl(){
-  return (
-    <div>
-      <Graph.default graph={graph} options={options} events={events} />
-    </div>
-  )
-}
-
-
 const headerStyles = { background: 'blue', color: 'white', margin: '0 auto' }
 const searchStyles = { background: 'grey', margin: '0 auto' }
 
 const rootElement = document.getElementById('root') as HTMLElement
-
 
 ReactDOM.render(
   <Provider store={Store}>
@@ -53,9 +47,8 @@ ReactDOM.render(
       </div>
 
       <div>
-        <NetGraphEl />
+        <GraphComponent />
       </div>
-
     </div>
   </Provider>
   ,

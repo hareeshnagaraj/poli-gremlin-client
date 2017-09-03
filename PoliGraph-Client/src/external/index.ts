@@ -1,5 +1,5 @@
 const janusAddress = 'ws://40.112.250.222:8182'
-const janusClient = new WebSocket(janusAddress)
+const janusClient: WebSocket = new WebSocket(janusAddress)
 
 
 export default function janusEventHandler(): void {
