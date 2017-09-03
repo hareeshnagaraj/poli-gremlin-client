@@ -33,11 +33,13 @@ const populateCongressMembers = function(congressSeshNumber, chamber)
 		congressNumber: congressSeshNumber,
 		chamber: chamber
 	}).then(function(res, error){
-		const data = res['results'][0];
-		const members = data['members'];
+		if(res['results'][0] != null){
+			const data = res['results'][0];
+			const members = data['members'];
 
-		// Enumerate the response
-		Promise.map(members, populateMemberInfo);
+			// Enumerate the response
+			Promise.map(members, populateMemberInfo);
+		}
 	});
 };
 
@@ -70,17 +72,38 @@ const populateMemberInfo = function(memberData)
 	return new Promise(function (resolve, reject) {
 		try
 		{
-			GremlinQuery({
-					string : queryString,
-					bindings : 
-						{ 
-							x1: memberData['first_name'],
-							x2: memberData['last_name'],
-							x3: memberData['date_of_birth'],
-							x4: memberData['party'],
-							x5: memberData['next_election']
+			var queryPrefix = "graph.addVertex(";
+			var querySuffix = ")";
+			var queryBindings = {};
+			var query = queryPrefix;
+			var index = 0;
+
+			Object.keys(memberData).forEach(
+				function(key) 
+					{
+						if(key != "id")
+						{
+							index++;
+							var b = "x"+index;
+							query += "'" + key + "'," + b + ",";
 						}
-				});
+			});
+
+			query = query.substring(0, query.length - 1);
+			query += querySuffix;
+			console.log(query);
+
+			// GremlinQuery({
+			// 		string : queryString,
+			// 		bindings : 
+			// 			{ 
+			// 				x1: memberData['first_name'],
+			// 				x2: memberData['last_name'],
+			// 				x3: memberData['date_of_birth'],
+			// 				x4: memberData['party'],
+			// 				x5: memberData['next_election']
+			// 			}
+			// 	});
 				
 			resolve();
 		}
@@ -88,8 +111,7 @@ const populateMemberInfo = function(memberData)
 		{
 			reject();
 		}
-    }).catch(()=>{
-	});
+    }).catch((err)=>{ console.log(err); });
 }
 
 /**
@@ -108,6 +130,7 @@ const GremlinQuery = function(queryContainer)
 {
 	var queryString = queryContainer['string'];
 	var queryBindings = queryContainer['bindings'];
+
     GremlinClient.execute(
 	queryString,
 	queryBindings,
