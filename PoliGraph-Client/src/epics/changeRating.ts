@@ -4,7 +4,7 @@ import {increaseRating} from '../actions'
 
 const RatingAction = 'RATE_ITEM_UP' || 'RATE_ITEM_DOWN'
 
-export const fetchGraphEpic = (action$, store) => {
+export const changeRatingEpic = (action$, store) => {
   return action$.ofType('RATE_ITEM_UP')
     .switchMap((action: any) =>
       action

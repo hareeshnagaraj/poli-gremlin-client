@@ -55,27 +55,15 @@ const onMouseOutNode = function(nodeId) {
 const onClickLink = function(nodeId) {
 }
 
-function asyncGraphData(graphData){
-  console.log('analyzing graph object')
 
-  return graphData ? {
-    nodes: graphData,
-    links: [
-        {source: 'RogerWicker', target: "ChristopherMurphy"}
-    ]
-  }
-
-  : sampleData
-}
 
 function GraphVisual({graph,onClickLink}){
-  const asyncGraph = asyncGraphData(wrangleGraphData(graph))
-  console.log('async graph',asyncGraph)
+  const asyncGraph = asyncGraphData(customizeNodes(graph))
   return (
     <Graph
          id='graph-id' // id is mandatory, if no id is defined rd3g will throw an error
-         data={ asyncGraph }
-         onChange={ asyncGraph }
+         data={asyncGraph}
+         onChange={asyncGraph}
          config={myConfig}
          onClickNode={onClickNode}
          onClickLink={onClickLink}
@@ -108,29 +96,33 @@ export const GraphComponent = connect(
   mapDispatchToProps
 )(GraphVisual)
 
+function asyncGraphData(graphData){
+  return graphData ? {
+    nodes: graphData,
+    links: [
+        {source: 'Roger Wicker', target: "Christopher Murphy"}
+    ]
+  }
+  : sampleData
+}
 
+function customizeNodeColor(node){
+  switch(node.properties.party[0].value) {
+    case 'D':
+      return '#0000FF'
+    case 'R':
+      return '#FF0000'
+  }
+}
 
+function getName(node){
+  return `${node.properties.first_name[0].value + ' ' + node.properties.last_name[0].value}`
+}
 
-function wrangleGraphData(data){
+function customizeNodes(data){
   if(Object.keys(data).length !== 0){
     return data.map(node => {
-      console.log('node!',node)
-      return {uuid: node.id, id: `${node.properties.first_name[0].value + node.properties.last_name[0].value}`, color: '#e04141'}
+      return {uuid: node.id, id: getName(node), color: customizeNodeColor(node)}
     })
   }
-  console.error('Graph property is not showing up')
 }
-
-/*
-
-function getGraphNodes(state){
-  console.log('current state tree!',state,state.graphReducer)
-  return state.graphReducer
-}
-function getLatestGraph(){
-  const currentStateTree = getGraphNodes(Store.getState())
-  console.log('hey', wrangleGraphData(currentStateTree))
-}
-const unsubscribe = Store.subscribe(getLatestGraph)
-
-*/
