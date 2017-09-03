@@ -67,8 +67,6 @@ const populateCongressMembers = function(congressSeshNumber, chamber)
  * */
 const populateMemberInfo = function(memberData)
 {
-	var queryString = "graph.addVertex('firstName', x1, 'lastName', x2, 'dateOfBirth', x3, 'party', x4, 'nextElection', x5)";
-
 	return new Promise(function (resolve, reject) {
 		try
 		{
@@ -86,31 +84,23 @@ const populateMemberInfo = function(memberData)
 							index++;
 							var bindingIdentifier = "x"+index;
 							query += "'" + key + "'," + bindingIdentifier + ",";
-							queryBindings[key] = memberData[key];
+							queryBindings[bindingIdentifier] = memberData[key];
 						}
 			});
 
 			query = query.substring(0, query.length - 1);
 			query += querySuffix;
+			console.log("\n");
 			console.log(query);
+			console.log("\n");
 			console.log(queryBindings);
 
-			// GremlinQuery({
-			// 		string : queryString,
-			// 		bindings : 
-			// 			{ 
-			// 				x1: memberData['first_name'],
-			// 				x2: memberData['last_name'],
-			// 				x3: memberData['date_of_birth'],
-			// 				x4: memberData['party'],
-			// 				x5: memberData['next_election']
-			// 			}
-			// 	});
-				
+			GremlinQuery({ string: query, bindings : queryBindings });
 			resolve();
 		}
-		catch(Exception)
+		catch(e)
 		{
+			console.log(e);
 			reject();
 		}
     }).catch((err)=>{ console.log(err); });
