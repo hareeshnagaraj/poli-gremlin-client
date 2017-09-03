@@ -1,12 +1,18 @@
 // Set your API key to an environment variable
 // Below script assumes propublicakey=yourkey and is accessed through process.env
 // You can set the env var with the following command: export propublicakey={your key}
-
 const Promise = require('bluebird');
 const fs = require('fs');
 const gremlin = require('gremlin-client');
 const Congress = require('propublica-congress-node');
 const uuid = require('uuid');
+const argv = require('minimist')(process.argv.slice(2));
+
+// Command line related constants
+const args = argv['_'];
+const populate = 'populate';
+const house = 'house';
+const senate = 'senate';
 
 // Global members
 // Make sure you have configured a local environment variable with the ProPublicaApi Key
@@ -14,10 +20,7 @@ const uuid = require('uuid');
 const ProPublicaClient = new Congress(process.env.propublicakey);
 const GremlinClient = gremlin.createClient(8182, '40.112.250.222');
 
-// Sleep time expects milliseconds
-function sleep (time) {
-  return new Promise((resolve) => setTimeout(resolve, time));
-}
+let listMode = false;
 
 // Retrieve information for a given congress session
 // 102-115 for House, 80-115 for Senate
@@ -70,6 +73,14 @@ const populateMemberInfo = function(memberData)
 	return new Promise(function (resolve, reject) {
 		try
 		{
+			if(listMode)
+			{
+				console.log("---------- LISTMODE ----------")
+				console.log(memberData);
+				console.log("---------- /LISTMODE ----------\N")
+				return;
+			}
+
 			var queryPrefix = "graph.addVertex(";
 			var querySuffix = ")";
 			var queryBindings = {};
@@ -90,12 +101,13 @@ const populateMemberInfo = function(memberData)
 
 			query = query.substring(0, query.length - 1);
 			query += querySuffix;
-			console.log("\n");
+			console.log("Executing Gremlin Query: \n");
 			console.log(query);
-			console.log("\n");
+			console.log("Bindings: \n");
 			console.log(queryBindings);
 
 			GremlinQuery({ string: query, bindings : queryBindings });
+
 			resolve();
 		}
 		catch(e)
@@ -103,6 +115,7 @@ const populateMemberInfo = function(memberData)
 			console.log(e);
 			reject();
 		}
+
     }).catch((err)=>{ console.log(err); });
 }
 
@@ -136,8 +149,38 @@ const GremlinQuery = function(queryContainer)
     });
 }
 
-// Testing
-populateCongressMembers(115, 'house');
+// EX: 
+/*
+	node app.js populate senate congress#
+	node app.js populate senate 115 	<-- Most recent congress session (2017)
+	node app.js populate house 115
 
+	Additional Flags:
+	-l : list mode - lists response from API and does not populate graph
+		  node app.js populate house 115 list
+ */
+if(args[0] == populate){
+
+    if(args.length < 3)
+    {
+		console.log(args.length);
+        throw new Error('Incorrect usage. 2 Ex: node app.js populate [house/senate] [congress session #]');
+    }
+    else if (args[1] != house && args[1] != senate)
+    {
+        throw new Error('Incorrect usage. Ex: node app.js populate [house/senate] [congress session #]');        
+    }
+
+    var chamber = args[1];
+    var congressSessionId = args[2];
+	console.log(args.length);
+	if(args.length == 4 && args[3] == "list")
+	{
+		listMode = true;
+	}
+
+    console.log('Populating ' + chamber + ' Session : ' + congressSessionId);
+	populateCongressMembers(parseInt(congressSessionId), chamber);
+}
 
 //populateCongressMembers(115, 'senate');
