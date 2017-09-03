@@ -8,7 +8,10 @@ const server = require('http').Server(app)
 
 const port = process.env.PORT || 3000
 
-const eventHandlers = require('./eventHandlers')
+const eventHandlers = require('./eventHandlers');
+
+const gremlin = require('gremlin-client');
+const GremlinClient = gremlin.createClient(8182, '40.112.250.222');
 
 app.enable('trust proxy');
 
@@ -41,6 +44,19 @@ app.get('/', (req, res) => {
 });
 
 app.use('/test', eventHandlers)
+
+app.get('/allnodes', (req, res)=>{
+    GremlinClient.execute(
+      'g.V()',
+      function(err, results) {
+            if (!err) {
+                res.send(results);
+            }
+            else{
+                res.send("Error executing " + err);
+            }
+        });
+});
 
 function errorHandler(err,req,res,next){
   console.error(err)
