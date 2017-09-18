@@ -13,6 +13,9 @@ const args = argv['_'];
 const populate = 'populate';
 const house = 'house';
 const senate = 'senate';
+const addvotingwithedge = 'addvotingwithedge';
+
+let congressSessionId = 0;
 
 // Global members
 // Make sure you have configured a local environment variable with the ProPublicaApi Key
@@ -73,19 +76,12 @@ const populateMemberInfo = function(memberData)
 	return new Promise(function (resolve, reject) {
 		try
 		{
-			if(listMode)
-			{
-				console.log("---------- LISTMODE ----------")
-				console.log(memberData);
-				console.log("---------- /LISTMODE ----------\N")
-				return;
-			}
-
 			var queryPrefix = "graph.addVertex(";
 			var querySuffix = ")";
 			var queryBindings = {};
 			var query = queryPrefix;
 			var index = 0;
+			memberData['sessionId'] = congressSessionId;
 
 			Object.keys(memberData).forEach(
 				function(key) 
@@ -95,12 +91,27 @@ const populateMemberInfo = function(memberData)
 							index++;
 							var bindingIdentifier = "x"+index;
 							query += "'" + key + "'," + bindingIdentifier + ",";
-							queryBindings[bindingIdentifier] = memberData[key];
+							queryBindings[bindingIdentifier] = encodeURIComponent(memberData[key]);
 						}
 			});
 
 			query = query.substring(0, query.length - 1);
 			query += querySuffix;
+
+			if(listMode)
+			{
+				console.log("---------- LISTMODE ----------")
+				console.log(memberData);
+				console.log("Gremlin Query: \n");
+				console.log(query);
+				console.log("Bindings: \n");
+				console.log(queryBindings);
+				console.log("---------- /LISTMODE ----------\N")
+				return;
+			}
+			
+			// Check if entry already exists
+
 			console.log("Executing Gremlin Query: \n");
 			console.log(query);
 			console.log("Bindings: \n");
@@ -149,6 +160,25 @@ const GremlinQuery = function(queryContainer)
     });
 }
 
+const GremlinQueryResp = function(queryContainer)
+{
+	var queryString = queryContainer['string'];
+	var queryBindings = queryContainer['bindings'];
+
+    GremlinClient.execute(
+	queryString,
+	queryBindings,
+	function(err, results) {
+        if (!err) {
+            return results;
+        }
+        else{
+            console.log("Error executing " + queryString);
+			return null;
+        }
+    });
+}
+
 // EX: 
 /*
 	node app.js populate senate congress#
@@ -172,8 +202,8 @@ if(args[0] == populate){
     }
 
     var chamber = args[1];
-    var congressSessionId = args[2];
-	console.log(args.length);
+    congressSessionId = args[2];
+
 	if(args.length == 4 && args[3] == "list")
 	{
 		listMode = true;
@@ -183,4 +213,11 @@ if(args[0] == populate){
 	populateCongressMembers(parseInt(congressSessionId), chamber);
 }
 
-//populateCongressMembers(115, 'senate');
+// EX: 
+/*
+	node app.js addvotingwithedge [outgoinghousememberid]
+ */
+if(args[0] == addvotingwithedge)
+{
+
+}

@@ -55,8 +55,6 @@ const onMouseOutNode = function(nodeId) {
 const onClickLink = function(nodeId) {
 }
 
-
-
 function GraphVisual({graph,onClickLink}){
   const asyncGraph = asyncGraphData(customizeNodes(graph))
   return (
@@ -97,11 +95,13 @@ export const GraphComponent = connect(
 )(GraphVisual)
 
 function asyncGraphData(graphData){
+  if(graphData == null)
+  {
+    console.log("NO GRAPH DATA");
+  }
   return graphData ? {
     nodes: graphData,
-    links: [
-        {source: 'Roger Wicker', target: "Christopher Murphy"}
-    ]
+    links: [    ]
   }
   : sampleData
 }
