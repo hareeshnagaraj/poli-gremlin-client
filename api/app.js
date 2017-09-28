@@ -7,6 +7,8 @@ const gremlin = require('gremlin-client');
 const Congress = require('propublica-congress-node');
 const uuid = require('uuid');
 const argv = require('minimist')(process.argv.slice(2));
+const util = require('util');
+const https = require('https');
 
 // Command line related constants
 const args = argv['_'];
@@ -70,6 +72,7 @@ const populateCongressMembers = function (congressSeshNumber, chamber) {
  * TODO: Senate Member Properties
  * */
 const populateMemberInfo = function (memberData) {
+	console.log(memberData);
 	return new Promise(function (resolve, reject) {
 		try {
 			var queryPrefix = "graph.addVertex(";
@@ -81,7 +84,7 @@ const populateMemberInfo = function (memberData) {
 
 			Object.keys(memberData).forEach(
 				function (key) {
-					if (key != "id" && memberData[key] != null) {
+					if (memberData[key] != null) {
 						index++;
 						var bindingIdentifier = "x" + index;
 						query += "'" + key + "'," + bindingIdentifier + ",";
@@ -113,7 +116,7 @@ const populateMemberInfo = function (memberData) {
 			GremlinQuery({
 				string: query,
 				bindings: queryBindings
-			});
+			}, (data)=>{ console.log(data)});
 
 			resolve();
 		} catch (e) {
@@ -131,46 +134,69 @@ const populateMemberInfo = function (memberData) {
  * https://projects.propublica.org/api-docs/congress-api/members/#compare-two-members-vote-positions
  * @param {*} data 
  */
-const AddVotingWithEdge = function (member) {
+const AddVotingWithEdge = function (member, allMembers, congressChamber, congressNumber) {
 	return new Promise(
 		function (resolve, reject) {
 			try {
 				var props = member.properties;
 
-				if (member.properties.crp_id != null) {
-
-					// Retrieve the CRP ID for this congress member
-					var id = member.properties.crp_id[0].value;
+				if (member.properties.id != null) {
+					// Retrieve the id for this congress member
+					var id = member.properties.id[0].value;
 					var name = member.properties.first_name[0].value + ' ' + member.properties.last_name[0].value
-					console.log(id + ' ' + name);
 
-					GremlinQuery({
-						string: "g.V()",
-						bindings: {}
-					},
-					(allNodes) => {
-						allNodes.map((node)=>{
+					resolve(
+						Promise.map(allMembers, (otherMemberNode)=>{
+							return new Promise(function (res, rej){
+								if(otherMemberNode.properties.id != null){
+									var otherMemberId = otherMemberNode.properties.id[0].value;
+									var otherMemberName = otherMemberNode.properties.first_name[0].value + ' ' + otherMemberNode.properties.last_name[0].value
 
-							if(node.properties.crp_id != null){
-								var otherMemberId = node.properties.crp_id[0].value;
-								var otherMemberName = node.properties.first_name[0].value + ' ' + node.properties.last_name[0].value
+									setTimeout(function(){
+										var options = {
+											"method": "GET",
+											"hostname": "https://api.propublica.org",
+											"port": null,
+											"path": util.format(
+												"/congress/v1/members/%s/votes/%s/%s/%s.json",
+												id,
+												otherMemberId,
+												congressNumber,
+												congressChamber),
+											"headers": {
+												"x-api-key": process.env.propublicakey
+											}
+										};
 
-								// Retrieve the two members' voting with %
-								ProPublicaClient.memberVotePositions({
-									memberId : id,
-								}).then((res,err)=>{
-									console.log(res);
-								});
-								console.log(id + ' ' + name + ' ' + otherMemberId + ' ' + otherMemberName);
-							}
+										console.log(options.hostname + options.path);
 
-						});
-					});
+										var req = https.request(options, function (res) {
+										var chunks = [];
+
+											res.on("data", function (chunk) {
+												chunks.push(chunk);
+											});
+
+											res.on("end", function () {
+												var body = Buffer.concat(chunks);
+												console.log(body.toString());
+											});
+
+											res.on("error", function(e){
+												console.log(e);
+											})
+										});
+
+										req.end();
+									}, Math.random() * 1000);
+								}
+							})
+						}));
 				}
 
 
 			} catch (e) {
-				console.log(e);
+				//console.log(e);
 			}
 		}
 	);
@@ -236,15 +262,30 @@ if (args[0] == populate) {
 
 // EX: 
 /*
-	node app.js addvotingwithedge [outgoinghousememberid] 
+	node app.js addvotingwithedge [chamber] [congressNumber]
+	node app.js addvotingwithedge house 115
+
  */
 if (args[0] == addvotingwithedge) {
+
+	if (args.length < 3) {
+		console.log(args.length);
+		throw new Error('Incorrect usage. 2 Ex: node app.js addvotingwithedge [house/senate] [congress session #]');
+	} else if (args[1] != house && args[1] != senate) {
+		throw new Error('Incorrect usage. Ex: node addvotingwithedge house 115');
+	}
+
+	var chamber = args[1];
+	congressSessionId = args[2];
+
 	var queryBindings = {};
 	GremlinQuery({
-			string: "g.V()",
-			bindings: queryBindings
-		},
-		(data) => {
-			Promise.map(data, AddVotingWithEdge);
+		string: "g.V()",
+		bindings: queryBindings
+	},
+		(allNodes) => {
+			Promise.map(allNodes, (memberNode) => {
+				return AddVotingWithEdge(memberNode, allNodes, chamber, congressSessionId);
+			});
 		});
 }
