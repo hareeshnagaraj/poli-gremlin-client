@@ -26,7 +26,7 @@ https://www.npmjs.com/package/react-graph-vis
 http://visjs.org/network_examples.html
 https://medium.com/ninjaconcept/interactive-dynamic-force-directed-graphs-with-d3-da720c6d7811
 
-https://www.capellaspace.com/
+* https://www.capellaspace.com/
   --> cool graph visualization
     - implement a full page 3d graphical view
     - simple overlay of search bar, as well as pop up boxes, and graph manipulation / rating tools

@@ -42,12 +42,11 @@ ReactDOM.render(
       <div>
         <Rating />
       </div>
-      <div style={searchStyles}>
-        <Search input='Search for a node'/>
-      </div>
-
       <div>
         <GraphComponent />
+      </div>
+      <div style={searchStyles}>
+        <Search input='Search for a node'/>
       </div>
     </div>
   </Provider>
