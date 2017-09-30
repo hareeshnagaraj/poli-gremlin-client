@@ -8,8 +8,8 @@ const Congress = require('propublica-congress-node');
 const uuid = require('uuid');
 const argv = require('minimist')(process.argv.slice(2));
 const util = require('util');
-const https = require('https');
-var request = require("request");
+const most = require('most');
+
 
 // Command line related constants
 const args = argv['_'];
@@ -37,8 +37,8 @@ const populateCongressMemberNodes = function (congressSeshNumber, chamber) {
 	}
 
 	ProPublicaClient.memberLists({
-		congressNumber: congressSeshNumber,
-		chamber: chamber
+		'congress-number': congressSeshNumber,
+		'chamber': chamber
 	}).then(function (res, error) {
 		if (res['results'][0] != null) {
 			const data = res['results'][0];
@@ -136,50 +136,72 @@ const addMemberNode = function (memberData) {
  * @param {*} data 
  */
 const addVotingWithEdge = function (member, allMembers, congressChamber, congressNumber) {
-	return new Promise(
-		function (resolve, reject) {
-			try {
-				var props = member.properties;
 
-				if (member.properties.id != null) {
-					// Retrieve the id for this congress member
-					var id = member.properties.id[0].value;
-					var name = member.properties.first_name[0].value + ' ' + member.properties.last_name[0].value
+	var id = member.properties.id[0].value;
+	var name = member.properties.first_name[0].value + ' ' + member.properties.last_name[0].value
 
-					resolve(
-						Promise.map(allMembers, (otherMemberNode)=>{
-							return new Promise(function (resolve, rej){
+	return most.from(allMembers)
+			   .filter((mem)=>{
+				   return mem.properties != null && mem.properties.id != null;
+			   })
+			   .delay(Math.random() * 600000)
+			   .map(otherMemberNode => {
 
-								if(otherMemberNode.properties.id != null){
-									var otherMemberId = otherMemberNode.properties.id[0].value;
-									var otherMemberName = otherMemberNode.properties.first_name[0].value + ' ' + otherMemberNode.properties.last_name[0].value
+					var otherMemberId = 
+						otherMemberNode.properties.id[0].value;
 
-									setTimeout(function(){
-										ProPublicaClient.memberVoteComparison({
-											'member-id-1' : id,
-											'member-id-2': otherMemberId,
-											'congress-number': congressNumber,
-											'chamber': congressChamber
-										}).then(function (res, error) {
-											if (res['results'][0] != null)
-											{
-												var data = res['results'][0];
-												console.log(data);
-											}
-										});
-									},
-									Math.random() * 600000);
-								}
-							})
-						}));
-				}
+					var otherMemberName = 
+						`${otherMemberNode.properties.first_name[0].value} ${otherMemberNode.properties.last_name[0].value}`;
 
 
-			} catch (e) {
-				reject(e);
-			}
-		}
-	);
+					return `${name} ${otherMemberName} ${Date.now()}`;
+					// ProPublicaClient.memberVoteComparison({
+					// 	'member-id-1' : id,
+					// 	'member-id-2': otherMemberId,
+					// 	'congress-number': congressNumber,
+					// 	'chamber': congressChamber
+					// }).then(function (res, error) {
+					// 	if (res['results'][0] != null)
+					// 	{
+					// 		var data = res['results'][0];
+					// 		return (data);
+					// 	}
+					// });
+				})
+
+	// return new Promise(
+	// 	function (resolve, reject) {
+	// 		try {
+	// 			var props = member.properties;
+
+	// 			if (member.properties.id != null) {
+	// 				// Retrieve the id for this congress member
+	// 				var id = member.properties.id[0].value;
+	// 				var name = member.properties.first_name[0].value + ' ' + member.properties.last_name[0].value
+
+	// 				resolve(
+	// 					Promise.map(allMembers, (otherMemberNode)=>{
+	// 						return new Promise(function (resolve, rej){
+
+	// 							if(otherMemberNode.properties.id != null){
+	// 								var otherMemberId = otherMemberNode.properties.id[0].value;
+	// 								var otherMemberName = otherMemberNode.properties.first_name[0].value + ' ' + otherMemberNode.properties.last_name[0].value
+
+	// 								setTimeout(function(){
+										
+	// 								},
+	// 								Math.random() * 600000);
+	// 							}
+	// 						})
+	// 					}));
+	// 			}
+
+
+	// 		} catch (e) {
+	// 			reject(e);
+	// 		}
+	// 	}
+	// );
 }
 
 /**
@@ -208,6 +230,14 @@ const GremlinQuery = function (queryContainer, dataFn) {
 				console.log("Error executing " + queryString);
 			}
 		});
+}
+
+
+if(args.length == 0)
+{
+	console.log("Commands:");
+	console.log("node app.js populate [house/senate] [congress session #]");
+	console.log("node app.js addvotingwithedge [house/senate] [congress session #]");
 }
 
 // EX: 
@@ -272,13 +302,23 @@ if (args[0] == addvotingwithedge) {
 	// });
 
 	var queryBindings = {};
+
 	GremlinQuery({
 		string: "g.V()",
 		bindings: queryBindings
 	},
-		(allNodes) => {
-			Promise.map(allNodes, (memberNode) => {
-				return addVotingWithEdge(memberNode, allNodes, chamber, congressSessionId);
+	(allNodes) => {
+
+		most.from(allNodes)
+			.filter((node)=>{
+				return node.properties != null && node.properties.id != null;
+			})
+			.map((node)=>{
+				return addVotingWithEdge(node, allNodes, chamber, congressSessionId);
+			})
+			.flatMap((s)=>{return s;})
+			.forEach((x)=>{
+				console.log(x);
 			});
-		});
+	});
 }
