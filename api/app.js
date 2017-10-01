@@ -145,51 +145,50 @@ const addVotingWithEdge = function (member, allMembers, congressChamber, congres
 				   			mem.properties.id != null &&
 							mem.properties.first_name != null &&
 							mem.properties.last_name != null;
-			   })
+			    })
 			   .map(otherMemberNode => {
 					return most.just(otherMemberNode)
-							.delay(Math.random() * 6000000)
-							.forEach(x => {
-								var otherMemberId = 
-									x.properties.id[0].value;
+						.delay(Math.random() * 6000000)
+						.map(x => {
+							return most.just(x)
+										.observe((x) => {
+															var otherMemberId =
+																x.properties.id[0].value;
 
-								var otherMemberName = 
-									`${x.properties.first_name[0].value} ${x.properties.last_name[0].value}`;
-								
-								ProPublicaClient.memberVoteComparison({
-									'member-id-1' : id,
-									'member-id-2': otherMemberId,
-									'congress-number': congressNumber,
-									'chamber': congressChamber
-								}).then(function (res, error) {
-									if(error != null){
-										console.log(error);
-									}
+															var otherMemberName =
+																`${x.properties.first_name[0].value} ${x.properties.last_name[0].value}`;
 
-									if(res == undefined){
-										if(error){
-											console.log(error)
-										}
-										return;
-									}
+															ProPublicaClient.memberVoteComparison({
+																'member-id-1': id,
+																'member-id-2': otherMemberId,
+																'congress-number': congressNumber,
+																'chamber': congressChamber
+															})
+															.then(function (res, error) {
+																if (error != null) {
+																	console.log(error);
+																}
 
-									console.log(`${name} ${otherMemberName} ${Date.now()}`);
-									console.log(res);
+																if (res == undefined) {
+																	if (error) {
+																		console.log(error)
+																	}
+																	return;
+																}
 
-									if (res['results'][0] != null)
-									{
-
-										var data = res['results'][0];
-										return (data);
-									}
-									else{
-										console.log(err);
-									}
-								});
-							})
-							.catch(function(err){
-								console.log(err);
-							});
+																if (res['results'][0] != null) {
+																	var data = res['results'][0];
+																	var commonVotes = data.common_votes;
+																	var disagreeVotes = data.disagree_votes;
+																	var agreePercent = data.agree_percent;
+																	var disagreePercent = data.disagree_percent;
+																	var returnValue = (`${name} // ${otherMemberName}. Common votes : ${commonVotes}, Disagree votes : ${disagreeVotes}, Agree % : ${agreePercent}, Disagree % ${disagreePercent}`);
+																	console.log(returnValue);
+																}
+														});
+													return Promise.resolve(x);
+										});
+						})
 				});
 }
 
@@ -309,8 +308,19 @@ if (args[0] == addvotingwithedge) {
 				return s;
 			})
 			.forEach((x)=>{
-				// most.fromPromise(x)
-				// 	.forEach((y)=>{console.log(y)});
+
+				x.observe((y)=>{
+					most.fromPromise(y)
+						.observe((x)=>{
+							console.log(x);
+						});
+				});
+				// x.then(function(result){
+				// 	console.log(x);
+				// });
+			})
+			.catch((e)=>{
+				console.log(e);
 			});
 	});
 }
