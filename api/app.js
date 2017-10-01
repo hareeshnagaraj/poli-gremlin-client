@@ -139,10 +139,8 @@ const addMemberNode = function (memberData) {
  * https://projects.propublica.org/api-docs/congress-api/members/#compare-two-members-vote-positions
  * @param {*} data 
  */
-const addVotingWithEdge = function (member, allMembers, congressChamber, congressNumber) {
+const addVotingWithEdge = function (memberInfo, allMembers, congressChamber, congressNumber) {
 
-	var id = member.properties.id[0].value;
-	var name = member.properties.first_name[0].value + ' ' + member.properties.last_name[0].value
 	var comparisonData = [];
 
 	return most.from(allMembers)
@@ -160,8 +158,14 @@ const addVotingWithEdge = function (member, allMembers, congressChamber, congres
 
 						var otherMemberName =
 							`${otherMemberNode.properties.first_name[0].value} ${otherMemberNode.properties.last_name[0].value}`;
+
+						var otherMemberInfo = {
+							id : otherMemberId,
+							name : otherMemberName, 
+							graphNodeId : otherMemberNode.id
+						}
 						
-						var comp = compareMemberVotesAndAddEdge(id, name, otherMemberId, otherMemberName, congressChamber, congressNumber);
+						var comp = compareMemberVotesAndAddEdge(memberInfo, otherMemberInfo, congressChamber, congressNumber);
 						comp.observe((x)=>{
 							//console.log(x); // TODO: Figure out how to actuallyr esolve this promise before returning
 						});
@@ -171,14 +175,14 @@ const addVotingWithEdge = function (member, allMembers, congressChamber, congres
 				});
 }
 
-const compareMemberVotesAndAddEdge = function(id, name, otherMemberId, otherMemberName, congressChamber, congressNumber) {
-	return most.just(otherMemberName)
+const compareMemberVotesAndAddEdge = function(memberInfo, otherMemberInfo, congressChamber, congressNumber) {
+	return most.just(otherMemberInfo.name)
 				.delay(Math.random() * 600000)
 				.scan((initial)=>{
 					initial.data = 
 						ProPublicaClient.memberVoteComparison({
-								'member-id-1': id,
-								'member-id-2': otherMemberId,
+								'member-id-1': memberInfo.id,
+								'member-id-2': otherMemberInfo.id,
 								'congress-number': congressNumber,
 								'chamber': congressChamber
 						})
@@ -204,7 +208,7 @@ const compareMemberVotesAndAddEdge = function(id, name, otherMemberId, otherMemb
 								var disagreeVotes = data.disagree_votes;
 								var agreePercent = data.agree_percent;
 								var disagreePercent = data.disagree_percent;
-								var returnValue = (`${name} // ${otherMemberName}. Common votes : ${commonVotes}, Disagree votes : ${disagreeVotes}, Agree % : ${agreePercent}, Disagree % ${disagreePercent}`);
+								var returnValue = (`${memberInfo.name}, ${memberInfo.graphNodeId} // ${otherMemberInfo.name}, ${otherMemberInfo.graphNodeId}. Common votes : ${commonVotes}, Disagree votes : ${disagreeVotes}, Agree % : ${agreePercent}, Disagree % ${disagreePercent}`);
 								console.log(returnValue);
 								return Promise.resolve(returnValue);
 							}
@@ -212,11 +216,11 @@ const compareMemberVotesAndAddEdge = function(id, name, otherMemberId, otherMemb
 							return Promise.resolve('..');
 						})
 						.catch((e)=>{
-							console.log(`Error comparing : ${name} // ${otherMemberName}. ${id}, ${otherMemberId}`);
+							console.log(`Error comparing : ${name} // ${otherMemberInfo.name}. ${id}, ${otherMemberInfo.id}`);
 						});
 
 					return initial
-				}, { name : otherMemberName, data : {}});
+				}, { data : {}});
 };
 
 /**
@@ -326,10 +330,19 @@ if (args[0] == addvotingwithedge) {
 
 		most.from(allNodes)
 			.filter((node)=>{
-				return node.properties != null && node.properties.id != null;
+				return node.properties != null && 
+						node.properties.id != null &&
+						node.properties.first_name != null &&
+						node.properties.last_name != null;
 			})
 			.map((node)=>{
-				return addVotingWithEdge(node, allNodes, chamber, congressSessionId);
+				var memberInfo = {
+							id : node.properties.id[0].value,
+							name : node.properties.first_name[0].value + ' ' + node.properties.last_name[0].value, 
+							graphNodeId : node.id
+						}
+
+				return addVotingWithEdge(memberInfo, allNodes, chamber, congressSessionId);
 			})
 			.observe((x)=>{
 				// console.log(x);
