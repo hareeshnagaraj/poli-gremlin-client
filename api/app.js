@@ -27,6 +27,11 @@ const GremlinClient = gremlin.createClient(8182, '40.112.250.222');
 
 let listMode = false;
 
+process.on('unhandledRejection', (reason, p) => {
+  console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
+  // application specific logging, throwing an error, or other logic here
+});
+
 // Retrieve information for a given congress session
 // 102-115 for House, 80-115 for Senate
 const populateCongressMemberNodes = function (congressSeshNumber, chamber) {
@@ -146,51 +151,64 @@ const addVotingWithEdge = function (member, allMembers, congressChamber, congres
 							mem.properties.first_name != null &&
 							mem.properties.last_name != null;
 			    })
-			   .map(otherMemberNode => {
-					return most.just(otherMemberNode)
-						.delay(Math.random() * 6000000)
-						.map(x => {
-							return most.just(x)
-										.observe((x) => {
-															var otherMemberId =
-																x.properties.id[0].value;
+				.recoverWith(e => most.of('defaultData'))
+				.forEach((otherMemberNode)=>{
+						var otherMemberId =
+							otherMemberNode.properties.id[0].value;
 
-															var otherMemberName =
-																`${x.properties.first_name[0].value} ${x.properties.last_name[0].value}`;
+						var otherMemberName =
+							`${otherMemberNode.properties.first_name[0].value} ${otherMemberNode.properties.last_name[0].value}`;
 
-															ProPublicaClient.memberVoteComparison({
-																'member-id-1': id,
-																'member-id-2': otherMemberId,
-																'congress-number': congressNumber,
-																'chamber': congressChamber
-															})
-															.then(function (res, error) {
-																if (error != null) {
-																	console.log(error);
-																}
+						return compareMemberVotesAndAddEdge(id, name, otherMemberId, otherMemberName, congressChamber, congressNumber);
+				})
+				.catch((e)=>{
 
-																if (res == undefined) {
-																	if (error) {
-																		console.log(error)
-																	}
-																	return;
-																}
-
-																if (res['results'][0] != null) {
-																	var data = res['results'][0];
-																	var commonVotes = data.common_votes;
-																	var disagreeVotes = data.disagree_votes;
-																	var agreePercent = data.agree_percent;
-																	var disagreePercent = data.disagree_percent;
-																	var returnValue = (`${name} // ${otherMemberName}. Common votes : ${commonVotes}, Disagree votes : ${disagreeVotes}, Agree % : ${agreePercent}, Disagree % ${disagreePercent}`);
-																	console.log(returnValue);
-																	return returnValue;
-																}
-														});
-										});
-						});
 				});
 }
+
+const compareMemberVotesAndAddEdge = function(id, name, otherMemberId, otherMemberName, congressChamber, congressNumber) {
+	return most.just(otherMemberName)
+				.delay(Math.random() * 600000)
+				.observe((x)=>{
+					ProPublicaClient.memberVoteComparison({
+							'member-id-1': id,
+							'member-id-2': otherMemberId,
+							'congress-number': congressNumber,
+							'chamber': congressChamber
+					})
+					.then((res, error)=>{
+						if (error != null) {
+							console.log(error);
+						}
+
+						if (res == undefined) {
+							if (error) {
+								console.log(error)
+							}
+							return;
+						}
+
+						if (res['results'] == undefined){
+							return;
+						}
+
+						if (res['results'][0] != null) {
+							var data = res['results'][0];
+							var commonVotes = data.common_votes;
+							var disagreeVotes = data.disagree_votes;
+							var agreePercent = data.agree_percent;
+							var disagreePercent = data.disagree_percent;
+							var returnValue = (`${name} // ${otherMemberName}. Common votes : ${commonVotes}, Disagree votes : ${disagreeVotes}, Agree % : ${agreePercent}, Disagree % ${disagreePercent}`);
+							console.log(returnValue);
+							return returnValue;
+						}
+					})
+					.catch((e)=>{
+						console.log(`Error comparing : ${name} // ${otherMemberName}. ${id}, ${otherMemberId}`);
+					});
+				});
+	
+};
 
 /**
  * Execute a gremlin query
@@ -304,20 +322,8 @@ if (args[0] == addvotingwithedge) {
 			.map((node)=>{
 				return addVotingWithEdge(node, allNodes, chamber, congressSessionId);
 			})
-			.flatMap((s)=>{
-				return s;
-			})
 			.forEach((x)=>{
 
-				x.observe((y)=>{
-					most.fromPromise(y)
-						.observe((x)=>{
-							console.log(x);
-						});
-				});
-				// x.then(function(result){
-				// 	console.log(x);
-				// });
 			})
 			.catch((e)=>{
 				console.log(e);
