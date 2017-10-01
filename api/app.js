@@ -162,7 +162,7 @@ const addVotingWithEdge = function (member, allMembers, congressChamber, congres
 						return compareMemberVotesAndAddEdge(id, name, otherMemberId, otherMemberName, congressChamber, congressNumber);
 				})
 				.catch((e)=>{
-
+					console.log(e);
 				});
 }
 
