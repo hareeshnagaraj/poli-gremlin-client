@@ -184,11 +184,11 @@ const addVotingWithEdge = function (member, allMembers, congressChamber, congres
 																	var disagreePercent = data.disagree_percent;
 																	var returnValue = (`${name} // ${otherMemberName}. Common votes : ${commonVotes}, Disagree votes : ${disagreeVotes}, Agree % : ${agreePercent}, Disagree % ${disagreePercent}`);
 																	console.log(returnValue);
+																	return returnValue;
 																}
 														});
-													return Promise.resolve(x);
 										});
-						})
+						});
 				});
 }
 
