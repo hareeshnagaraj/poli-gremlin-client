@@ -143,6 +143,7 @@ const addVotingWithEdge = function (member, allMembers, congressChamber, congres
 
 	var id = member.properties.id[0].value;
 	var name = member.properties.first_name[0].value + ' ' + member.properties.last_name[0].value
+	var comparisonData = [];
 
 	return most.from(allMembers)
 			   .filter((mem)=>{
@@ -152,15 +153,19 @@ const addVotingWithEdge = function (member, allMembers, congressChamber, congres
 							mem.properties.last_name != null;
 			    })
 				.recoverWith(e => most.of('defaultData'))
-				.forEach((otherMemberNode)=>{
+				.reduce((data, otherMemberNode, currentIndex)=>{
+
 						var otherMemberId =
 							otherMemberNode.properties.id[0].value;
 
 						var otherMemberName =
 							`${otherMemberNode.properties.first_name[0].value} ${otherMemberNode.properties.last_name[0].value}`;
-
-						return compareMemberVotesAndAddEdge(id, name, otherMemberId, otherMemberName, congressChamber, congressNumber);
-				})
+						
+						var comp = compareMemberVotesAndAddEdge(id, name, otherMemberId, otherMemberName, congressChamber, congressNumber);
+						comp.observe((x)=>{
+							//console.log(x); // TODO: Figure out how to actuallyr esolve this promise before returning
+						});
+				}, comparisonData)
 				.catch((e)=>{
 					console.log(e);
 				});
@@ -169,45 +174,49 @@ const addVotingWithEdge = function (member, allMembers, congressChamber, congres
 const compareMemberVotesAndAddEdge = function(id, name, otherMemberId, otherMemberName, congressChamber, congressNumber) {
 	return most.just(otherMemberName)
 				.delay(Math.random() * 600000)
-				.observe((x)=>{
-					ProPublicaClient.memberVoteComparison({
-							'member-id-1': id,
-							'member-id-2': otherMemberId,
-							'congress-number': congressNumber,
-							'chamber': congressChamber
-					})
-					.then((res, error)=>{
-						if (error != null) {
-							console.log(error);
-						}
-
-						if (res == undefined) {
-							if (error) {
-								console.log(error)
+				.scan((initial)=>{
+					initial.data = 
+						ProPublicaClient.memberVoteComparison({
+								'member-id-1': id,
+								'member-id-2': otherMemberId,
+								'congress-number': congressNumber,
+								'chamber': congressChamber
+						})
+						.then((res, error)=>{
+							if (error != null) {
+								return Promise.reject(error);
 							}
-							return;
-						}
 
-						if (res['results'] == undefined){
-							return;
-						}
+							if (res == undefined) {
+								if (error) {
+									console.log(error)
+								}
+								return Promise.reject('..');
+							}
 
-						if (res['results'][0] != null) {
-							var data = res['results'][0];
-							var commonVotes = data.common_votes;
-							var disagreeVotes = data.disagree_votes;
-							var agreePercent = data.agree_percent;
-							var disagreePercent = data.disagree_percent;
-							var returnValue = (`${name} // ${otherMemberName}. Common votes : ${commonVotes}, Disagree votes : ${disagreeVotes}, Agree % : ${agreePercent}, Disagree % ${disagreePercent}`);
-							console.log(returnValue);
-							return returnValue;
-						}
-					})
-					.catch((e)=>{
-						console.log(`Error comparing : ${name} // ${otherMemberName}. ${id}, ${otherMemberId}`);
-					});
-				});
-	
+							if (res['results'] == undefined){
+								return Promise.reject('..');
+							}
+
+							if (res['results'][0] != null) {
+								var data = res['results'][0];
+								var commonVotes = data.common_votes;
+								var disagreeVotes = data.disagree_votes;
+								var agreePercent = data.agree_percent;
+								var disagreePercent = data.disagree_percent;
+								var returnValue = (`${name} // ${otherMemberName}. Common votes : ${commonVotes}, Disagree votes : ${disagreeVotes}, Agree % : ${agreePercent}, Disagree % ${disagreePercent}`);
+								console.log(returnValue);
+								return Promise.resolve(returnValue);
+							}
+
+							return Promise.resolve('..');
+						})
+						.catch((e)=>{
+							console.log(`Error comparing : ${name} // ${otherMemberName}. ${id}, ${otherMemberId}`);
+						});
+
+					return initial
+				}, { name : otherMemberName, data : {}});
 };
 
 /**
@@ -322,8 +331,8 @@ if (args[0] == addvotingwithedge) {
 			.map((node)=>{
 				return addVotingWithEdge(node, allNodes, chamber, congressSessionId);
 			})
-			.forEach((x)=>{
-
+			.observe((x)=>{
+				// console.log(x);
 			})
 			.catch((e)=>{
 				console.log(e);
