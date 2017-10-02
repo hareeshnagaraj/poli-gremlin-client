@@ -208,7 +208,8 @@ const compareMemberVotesAndAddEdge = function(memberInfo, otherMemberInfo, congr
 								var disagreeVotes = data.disagree_votes;
 								var agreePercent = data.agree_percent;
 								var disagreePercent = data.disagree_percent;
-								var returnValue = (`${memberInfo.name}, ${memberInfo.graphNodeId} // ${otherMemberInfo.name}, ${otherMemberInfo.graphNodeId}. Common votes : ${commonVotes}, Disagree votes : ${disagreeVotes}, Agree % : ${agreePercent}, Disagree % ${disagreePercent}`);
+								var returnValue = (`${memberInfo.name}, ${memberInfo.graphNodeId}, ${memberInfo.id} // ${otherMemberInfo.name}, ${otherMemberInfo.graphNodeId}, ${otherMemberInfo.id}. Common votes : ${commonVotes}, Disagree votes : ${disagreeVotes}, Agree % : ${agreePercent}, Disagree % ${disagreePercent}`);
+
 								console.log(returnValue);
 								return Promise.resolve(returnValue);
 							}
@@ -336,9 +337,10 @@ if (args[0] == addvotingwithedge) {
 						node.properties.last_name != null;
 			})
 			.map((node)=>{
-				var memberInfo = {
+				var memberInfo = 
+						{
 							id : node.properties.id[0].value,
-							name : node.properties.first_name[0].value + ' ' + node.properties.last_name[0].value, 
+							name : `${node.properties.first_name[0].value} ${node.properties.last_name[0].value}`, 
 							graphNodeId : node.id
 						}
 
