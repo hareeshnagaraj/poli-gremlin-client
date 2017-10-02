@@ -1,6 +1,7 @@
-import * as Rx from 'rxjs';
+import * as Rx from 'rxjs'
 
-import { fetchGraphFulfilled } from '../actions'
+import janusEventHandler from '../external'
+import { fetchGraphFulfilled, START_GRAPH_STREAM, GRAPH_DATA_PACKET } from '../actions'
 
 /* flatmap / switch map operate on each value in observable stream, while reducing into a single observable
    that can than be subscribed to -> this is handled by the epic middleware in configureStore
@@ -11,15 +12,38 @@ import { fetchGraphFulfilled } from '../actions'
 const janusAddress = 'ws://40.112.250.222:8182'
 const socket$ = Rx.Observable.webSocket(janusAddress)
 
+
+//const webSocketConn = janusEventHandler()
+
+/* Initalize the application by setting tcp event listeners to the Janus instance, dispatch initial graph import */
+//webSocketConn ? webSocketConn : 'janus connection failed'
+
 /* https://stackoverflow.com/questions/45069489/using-redux-observable-and-subscribing-to-a-websocket */
 
-const fetchSocketGraphEpic = (action$, store) => {
-  return action$.ofType('FETCH_GRAPH')
-    .switchMap((action: any) =>
+//https://jsfiddle.net/rolele/ued0oh9q/
+
+export const fetchSocketGraphEpic = (action$, store) => {
+  console.log('called!',action$)
+  return action$.ofType('START_STREAM')
+    .mergeMap((action: any) =>
       socket$
-        .map(fetchGraphFulfilled)
+        .multiplex(
+          () => { console.log('sub')
+            return { sub: action.payload }},
+          () => { console.log('unsub')
+            return{ unsub: action.payload }},
+          graph => true //graph === action.payload
+        )
+        .map(fetchGraphFulfilled) //GRAPH_DATA_PACKET
+        .retryWhen((err) => {
+            console.log('retry when err ')
+            console.log(err)
+            return window.navigator.onLine ? Rx.Observable.timer(1000) : Rx.Observable.fromEvent(window, 'online')
+        })
         .catch(epicError)
+        .forEach((s) => console.log('inside socket epic',s)) //for development purposes only
     )
+    .forEach(s => console.log('merged stream', s))
 }
 
 export const fetchGraphEpic = (action$, store) => {

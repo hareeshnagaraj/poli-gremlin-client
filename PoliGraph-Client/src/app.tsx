@@ -6,14 +6,8 @@ import { Store } from './state/store'
 import { Greeting, Search, Rating } from './components'
 import { GraphComponent } from './components/containers/graph'
 
-import janusEventHandler from './external'
-
-//const webSocketConn = janusEventHandler()
-
-/* Initalize the application by setting tcp event listeners to the Janus instance, dispatch initial graph import */
-//webSocketConn ? webSocketConn : 'janus connection failed'
-
 Store.dispatch({type: 'FETCH_GRAPH'})
+Store.dispatch({type: 'START_STREAM'})
 
 
 function App() {
