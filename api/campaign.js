@@ -18,7 +18,12 @@ const apiKey = process.env.propublicacampaignfinancekey;
 console.log(apiKey);
 
 // Api Addresses
+// arg1=cycle
 const candidateTotalApiAddress = 'https://api.propublica.org/campaign-finance/v1/%s/president/totals.json';
+
+// arg1=cycle, arg2=commitee id
+const candidateCommitteeInfoApiAddress = 'https://api.propublica.org/campaign-finance/v1/%s/committees/%s.json';
+
 const options = {
     headers: {
         'User-Agent': 'Request-Promise',
@@ -33,6 +38,17 @@ const getRequestOptions = (uri) => {
     return options;
 }
 
+const getProPublicaRequestResults = (resp) =>{
+    if(resp['results'] == null ||
+        resp['results'] == undefined ||
+        resp['results'][0] == null || 
+        resp['results'] == undefined){
+            throw new Error('undefined res');
+        }
+
+    return resp['results'];
+}
+
 // Return a request promise to the json of total contributions to all candidates
 // https://propublica.github.io/campaign-finance-api-docs/#presidential-candidate-totals
 const getCandidateTotals = (year) => {
@@ -41,10 +57,27 @@ const getCandidateTotals = (year) => {
 
     return rp(options)
             .then((resp) => {
-                return resp;
+                return getProPublicaRequestResults(resp);
             })
             .catch((err) =>{
                 console.log(`getCandidateTotals Error : ${err}`);
+            });
+}
+
+const getCandidateCommitteeInfo = (candidateInfo, year) => {
+
+    var options = getRequestOptions(
+                    util.format(
+                        candidateCommitteeInfoApiAddress,
+                        year,
+                        candidateInfo.committee_id));
+
+    return rp(options)
+            .then((resp) => {
+                return getProPublicaRequestResults(resp);
+            })
+            .catch((err) =>{
+                console.log(`getCandidateCommitteeInfo Error : ${err}`);
             });
 }
 
@@ -56,7 +89,21 @@ if(args[0] == 'pres-candidate-totals' && args[1] != null){
 
      getCandidateTotals(year)
         .then((r)=>{
-            console.log(r);
+            most.from(r)
+                .map((candidateInfo)=>{
+                    getCandidateCommitteeInfo(candidateInfo, year)
+                        .then((x)=>{
+                            var candidateCommitteeInfo = x[0];
+                            console.log("-----------------------------");
+                            console.log(candidateCommitteeInfo);
+                            console.log("-----------------------------");
+                        })
+                })
+                .observe((x)=>{
+                })
+                .catch((e)=>{
+                    console.log(e);
+                })
         });
 }
 
