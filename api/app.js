@@ -18,6 +18,9 @@ const senate = 'senate';
 const addvotingwithedge = 'addvotingwithedge';
 
 let congressSessionId = 0;
+var counter = 0;
+var failCounter = 0;
+var startTime = Date.now();
 
 // Global members
 // Make sure you have configured a local environment variable with the ProPublicaApi Key
@@ -177,8 +180,9 @@ const addVotingWithEdge = function (memberInfo, allMembers, congressChamber, con
 
 const compareMemberVotesAndAddEdge = function(memberInfo, otherMemberInfo, congressChamber, congressNumber) {
 	return most.just(otherMemberInfo.name)
-				.delay(Math.random() * 600000)
+				.delay(Math.random() * 2400000)
 				.scan((initial)=>{
+					
 					initial.data = 
 						ProPublicaClient.memberVoteComparison({
 								'member-id-1': memberInfo.id,
@@ -199,7 +203,8 @@ const compareMemberVotesAndAddEdge = function(memberInfo, otherMemberInfo, congr
 							}
 
 							if (res['results'] == undefined){
-								return Promise.reject('..');
+								var oute = JSON.stringify(res);
+								return Promise.reject(`${memberInfo.name}, ${memberInfo.graphNodeId}, ${memberInfo.id} // ${otherMemberInfo.name}, ${otherMemberInfo.graphNodeId}, ${otherMemberInfo.id} --- Undefined res`);
 							}
 
 							if (res['results'][0] != null) {
@@ -208,21 +213,47 @@ const compareMemberVotesAndAddEdge = function(memberInfo, otherMemberInfo, congr
 								var disagreeVotes = data.disagree_votes;
 								var agreePercent = data.agree_percent;
 								var disagreePercent = data.disagree_percent;
-								var returnValue = (`${memberInfo.name}, ${memberInfo.graphNodeId}, ${memberInfo.id} // ${otherMemberInfo.name}, ${otherMemberInfo.graphNodeId}, ${otherMemberInfo.id}. Common votes : ${commonVotes}, Disagree votes : ${disagreeVotes}, Agree % : ${agreePercent}, Disagree % ${disagreePercent}`);
+								var queryInfoStr = (`${memberInfo.name}, ${memberInfo.graphNodeId}, ${memberInfo.id} // ${otherMemberInfo.name}, ${otherMemberInfo.graphNodeId}, ${otherMemberInfo.id}. Common votes : ${commonVotes}, Disagree votes : ${disagreeVotes}, Agree % : ${agreePercent}, Disagree % ${disagreePercent}`);
+								
+								var edgeQueryStr = 
+									AddEdgeGremlinQueryString(
+										memberInfo.graphNodeId,
+										otherMemberInfo.graphNodeId, 
+										commonVotes, 
+										disagreeVotes, 
+										agreePercent, 
+										disagreePercent);
 
-								console.log(returnValue);
-								return Promise.resolve(returnValue);
+									try{
+										var elapsed = (Date.now() - startTime);
+										GremlinQuery({ string : edgeQueryStr, bindings : {}}, (edge)=>{
+											console.log(`${counter++} - ${elapsed} ms|| ${queryInfoStr}`);
+											return Promise.resolve('addedEdge');
+										});
+									}
+									catch(er){
+										console.log('----------------------');
+										console.log(er);
+										console.log(edgeQueryStr);
+										console.log('----------------------');
+									}
 							}
 
-							return Promise.resolve('..');
+							return Promise.resolve(`No Data - ${res}`);
 						})
 						.catch((e)=>{
-							console.log(`Error comparing : ${name} // ${otherMemberInfo.name}. ${id}, ${otherMemberInfo.id}`);
+							failCounter++;
+							//console.log(`FAIL : ${failCounter++} | ${e}`)
 						});
 
 					return initial
-				}, { data : {}});
+				}, 
+				{ data : {}});
 };
+
+const AddEdgeGremlinQueryString = (id1, id2, commonVotes, disagreeVotes, agreePercent, disagreePercent) =>{
+	return `g.V(${id1}).as('a').V('${id2}').as('b').addE('voteComparison').from('a').to('b').property('commonVotes','${commonVotes}').property('disagreevotes','${disagreeVotes}').property('agreePercent','${agreePercent}').property('disagreePercent','${disagreePercent}')`;
+}
 
 /**
  * Execute a gremlin query
