@@ -5,8 +5,6 @@ import { connect } from 'react-redux'
 import { Store } from '../../state/store'
 
 // https://github.com/danielcaldas/react-d3-graph/blob/master/sandbox/Sandbox.js
-//https://github.com/reactjs/reselect
-// Graph payload (with minimalist structure)
 
 //https://gist.github.com/zxbodya/20c63681d45a049df3fc
 
@@ -24,11 +22,13 @@ const sampleData = {
     ]
 }
 
-// const data = wrangleGraphData(retrieveGraphState()) || sampleData
 
-// The graph configuration
+/** The graph configuration ->
+      https://github.com/danielcaldas/react-d3-graph/blob/master/src/components/Graph/config.js
+*/
 const myConfig = {
     highlightBehavior: true,
+    height: 1000,
     node: {
         color: 'lightgreen',
         size: 10000,
@@ -39,29 +39,14 @@ const myConfig = {
     }
 }
 
-// Graph event callbacks
-const onClickNode = function(nodeId) {
-  console.log('Clicked node', nodeId)
-}
 
-const onMouseOverNode = function(nodeId) {
-  console.log('Mouse over node', nodeId)
-  //  window.alert('Mouse over node', nodeId)
-}
-
-const onMouseOutNode = function(nodeId) {
-}
-
-const onClickLink = function(nodeId) {
-}
-
-function GraphVisual({graph,onClickLink}){
+function GraphVisual({graph,onClickLink,onMouseOverNode}){
   const asyncGraph = asyncGraphData(customizeNodes(graph))
   return (
     <Graph
          id='graph-id' // id is mandatory, if no id is defined rd3g will throw an error
          data={asyncGraph}
-         onChange={asyncGraph}
+         onChange={asyncGraph} // onChange attribute allows component to update on receipt of new state information
          config={myConfig}
          onClickNode={onClickNode}
          onClickLink={onClickLink}
@@ -79,12 +64,18 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    onFetchGraph : () => dispatch({
-        type : 'FETCH_GRAPH'
-    }),
-    onClickLink : () => dispatch({
-        type : 'SELECTED_EDGE'
-    })
+    // onFetchGraph : () => dispatch({
+    //     type : 'FETCH_GRAPH'
+    // }),
+    onClickLink : () => {
+      console.log('SELECTED_EDGE test')
+      dispatch({
+          type : 'SELECTED_EDGE'
+      })
+    },
+    onMouseOverNode : (nodeId) => {
+      console.log('Mouse over node', nodeId)
+    }
   }
 }
 
@@ -94,16 +85,18 @@ export const GraphComponent = connect(
   mapDispatchToProps
 )(GraphVisual)
 
+
+
 function asyncGraphData(graphData){
-  if(graphData == null)
-  {
-    console.log("NO GRAPH DATA");
+  if (graphData) {
+    return {
+      nodes: graphData,
+      links: [
+          {source: 'Roger Wicker', target: 'Christopher Murphy'}
+      ]
+    }
   }
-  return graphData ? {
-    nodes: graphData,
-    links: [    ]
-  }
-  : sampleData
+  return sampleData
 }
 
 function customizeNodeColor(node){
@@ -125,4 +118,23 @@ function customizeNodes(data){
       return {uuid: node.id, id: getName(node), color: customizeNodeColor(node)}
     })
   }
+}
+
+
+// Graph event callbacks
+const onClickNode = function(nodeId) {
+  console.log('Clicked node', nodeId)
+}
+
+const onMouseOutNode = function(nodeId) {
+}
+
+const onClickLink = function(nodeId) {
+}
+
+const graphEvents = {
+  onClickNode,
+  onClickLink,
+  onMouseOutNode,
+  //onMouseOverNode
 }

@@ -1,11 +1,11 @@
 import * as Rx from 'rxjs';
 
-import {increaseRating} from '../actions'
+import { increaseRating, decreaseRating } from '../actions'
 
 const RatingAction = 'RATE_ITEM_UP' || 'RATE_ITEM_DOWN'
 
 export const changeRatingEpic = (action$, store) => {
-  return action$.ofType('RATE_ITEM_UP')
+  return action$.ofType(RatingAction)
     .switchMap((action: any) =>
       action
         .map(increaseRating)
