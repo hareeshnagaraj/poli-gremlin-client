@@ -6,7 +6,7 @@ import { Store } from './state/store'
 import { Greeting, Search, Rating } from './components'
 import { GraphComponent } from './components/containers/graph'
 
-Store.dispatch({type: 'FETCH_GRAPH'})
+// Store.dispatch({type: 'FETCH_GRAPH'})
 Store.dispatch({type: 'START_STREAM'})
 
 

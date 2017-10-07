@@ -1,4 +1,38 @@
 import * as Rx from 'rxjs'
+//import gremlin from 'gremlin-client'
+const gremlin = require('gremlin-client')
+console.log('gremlin!',gremlin)
+
+const GremlinClient = gremlin.createClient(8182,'40.112.250.222')
+
+const GremlinQuery = function (queryContainer, dataFn) {
+	var queryString = queryContainer['string'];
+	var queryBindings = queryContainer['bindings'];
+
+	GremlinClient.execute(
+		queryString,
+		queryBindings,
+		(err, results) => {
+			if (!err) {
+				dataFn(results);
+			} else {
+				console.log("Error executing " + queryString);
+			}
+		});
+}
+
+const getAllNodesQuery = {
+  string: "g.V()",
+  bindings: {}
+}
+
+const testQuery = GremlinQuery(getAllNodesQuery,
+(allNodes) => {
+  console.log(allNodes)
+})
+
+
+
 
 import janusEventHandler from '../external'
 import { fetchGraphFulfilled, START_GRAPH_STREAM, GRAPH_DATA_PACKET } from '../actions'
@@ -8,6 +42,7 @@ import { fetchGraphFulfilled, START_GRAPH_STREAM, GRAPH_DATA_PACKET } from '../a
 
    switchMap forces latest data into stream
 */
+
 
 const janusAddress = 'ws://40.112.250.222:8182'
 const socket$ = Rx.Observable.webSocket(janusAddress)
@@ -24,6 +59,7 @@ const socket$ = Rx.Observable.webSocket(janusAddress)
 
 export const fetchSocketGraphEpic = (action$, store) => {
   console.log('called!',action$)
+  testQuery
   return action$.ofType('START_STREAM')
     .mergeMap((action: any) =>
       socket$
