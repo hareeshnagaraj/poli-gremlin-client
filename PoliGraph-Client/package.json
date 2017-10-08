@@ -46,6 +46,7 @@
     "redux": "^3.7.2",
     "redux-observable": "^0.16.0",
     "rxjs": "^5.4.3",
+    "rxjs-stream": "^1.0.4",
     "spdy": "^3.4.7"
   },
   "devDependencies": {
