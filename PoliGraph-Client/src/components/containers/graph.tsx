@@ -30,7 +30,7 @@ const myConfig = {
     highlightBehavior: true,
     node: {
         color: 'lightgreen',
-        size: 1000,
+        size: 3000,
         highlightStrokeColor: 'blue'
     },
     link: {
