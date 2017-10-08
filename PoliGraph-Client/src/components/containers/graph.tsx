@@ -22,6 +22,7 @@ const sampleData = {
     ]
 }
 
+const inMemoryData = { nodes : {}, links : {} };
 
 /** The graph configuration ->
       https://github.com/danielcaldas/react-d3-graph/blob/master/src/components/Graph/config.js
@@ -30,7 +31,7 @@ const myConfig = {
     highlightBehavior: true,
     node: {
         color: 'lightgreen',
-        size: 3000,
+        size: 1000,
         highlightStrokeColor: 'blue'
     },
     link: {
@@ -74,6 +75,7 @@ const mapDispatchToProps = dispatch => {
       })
     },
     onMouseOverNode : (nodeId) => {
+      console.log(inMemoryData[nodeId]);
     }
   }
 }
@@ -109,7 +111,9 @@ function getName(node){
 function customizeNodes(data){
   if(Object.keys(data).length !== 0){
     return data.map(node => {
-      return { labelProperty: 'name', id: getName(node), color: customizeNodeColor(node) };
+      var name = getName(node);
+      inMemoryData[name] = node;
+      return { labelProperty: 'name', id: name, color: customizeNodeColor(node), details:node };
     })
   }
 }

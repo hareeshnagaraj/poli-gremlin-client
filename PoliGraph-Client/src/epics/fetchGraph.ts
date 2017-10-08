@@ -1,15 +1,10 @@
 import * as Rx from 'rxjs'
 import {streamToRx} from 'rxjs-stream'
 
-import { fetchGraphFulfilled, START_GRAPH_STREAM, GRAPH_DATA_PACKET } from '../actions'
+import { START_GRAPH_STREAM, GRAPH_DATA_PACKET } from '../actions'
 
 const gremlin = require('gremlin-client')
 const GremlinClient = gremlin.createClient(8182,'40.112.250.222')
-
-const gremlinQueryStream = GremlinClient.stream('g.V()')//.on('data', (data) => console.log('data!!!', data))
-
-//const socket$ = Rx.Observable.webSocket(gremlinQueryStream)
-const graphStream = streamToRx(gremlinQueryStream)
 
 /* flatmap / switch map operate on each value in observable stream, while reducing into a single observable
    that can than be subscribed to -> this is handled by the epic middleware in configureStore
@@ -51,16 +46,6 @@ export const fetchSocketGraphEpic = (action$, store) => {
                 .takeUntil(action$.ofType('CLOSE_GRAPH_STREAM'))
                 .catch(epicError);
     })
-}
-
-export const fetchGraphEpic = (action$, store) => {
-  return action$.ofType('FETCH_GRAPH')
-    .switchMap((action: any) =>
-      Rx.Observable.ajax.getJSON(`http://127.0.0.1:3000/Test`)
-        // .filter(filterCongressCritters('D'))
-        .map(fetchGraphFulfilled)
-        .catch(epicError)
-    )
 }
 
 /* Not being properly passed to filter function as observable? */
