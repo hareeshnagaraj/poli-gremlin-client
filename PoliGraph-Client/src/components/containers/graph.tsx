@@ -40,7 +40,6 @@ const myConfig = {
 
 
 function GraphVisual({graph,onClickLink,onMouseOverNode}){
-  console.log(graph);
   const asyncGraph = asyncGraphData(customizeNodes(graph))
   return (
     <Graph
@@ -68,13 +67,11 @@ const mapDispatchToProps = dispatch => {
     //     type : 'FETCH_GRAPH'
     // }),
     onClickLink : () => {
-      console.log('SELECTED_EDGE test')
       dispatch({
           type : 'SELECTED_EDGE'
       })
     },
     onMouseOverNode : (nodeId) => {
-      console.log('Mouse over node', nodeId)
     }
   }
 }
@@ -102,12 +99,10 @@ function customizeNodeColor(node){
 }
 
 function getName(node){
-  console.log('getting name!',node)
   return `${node.properties.first_name[0].value + ' ' + node.properties.last_name[0].value}`
 }
 
 function customizeNodes(data){
-  console.log('customizing nodes!', data)
   // return {uuid: data.id, id: getName(data), color: customizeNodeColor(data)}
   if(Object.keys(data).length !== 0){
     return data.map(node => {
@@ -118,7 +113,6 @@ function customizeNodes(data){
 
 // Graph event callbacks
 const onClickNode = function(nodeId) {
-  console.log('Clicked node', nodeId)
 }
 
 const onMouseOutNode = function(nodeId) {

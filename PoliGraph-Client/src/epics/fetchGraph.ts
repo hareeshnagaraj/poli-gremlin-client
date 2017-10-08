@@ -22,21 +22,12 @@ const graphStream = streamToRx(gremlinQueryStream)
    https://jsfiddle.net/rolele/ued0oh9q/
 */
 
-// import janusEventHandler from '../external'
-// const janusAddress = 'ws://40.112.250.222:8182'
-// const socket$ = Rx.Observable.webSocket(janusAddress)
-//const webSocketConn = janusEventHandler()
-
-
-
 export const fetchSocketGraphEpic = (action$, store) => {
-console.log(graphStream)
   return action$.ofType('START_GRAPH_STREAM')
     .mergeMap((action: any) =>
       graphStream
         .map(GRAPH_DATA_PACKET)
         .retryWhen((err) => {
-            console.log('retry when error: ',err)
             return window.navigator.onLine ? Rx.Observable.timer(1000) : Rx.Observable.fromEvent(window, 'online')
         })
         .takeUntil(action$.ofType('CLOSE_GRAPH_STREAM'))
@@ -57,7 +48,6 @@ export const fetchGraphEpic = (action$, store) => {
 /* Not being properly passed to filter function as observable? */
 function filterCongressCritters(party: string): any {
   return (critter) => {
-    console.log('Inside Filter Function', party, typeof party, Array.isArray(critter))
     return critter.properties.party[0].value === party
   }
 }

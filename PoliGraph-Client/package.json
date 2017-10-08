@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node ./server",
+    "go":"webpack --progress --colors && node ./server",
     "build-prod": "webpack --optimize-minimize",
     "build-dev": "webpack --progress --colors",
     "test": "jest",

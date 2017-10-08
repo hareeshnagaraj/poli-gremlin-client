@@ -9,7 +9,6 @@ export default function janusEventHandler(): WebSocket {
 }
 
 function openHandler(data): void {
-  console.log('open!',data)
   janusClient.send('test!')
 }
 
