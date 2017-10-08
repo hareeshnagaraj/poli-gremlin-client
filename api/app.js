@@ -224,7 +224,8 @@ const compareMemberVotesAndAddEdge = function(memberInfo, otherMemberInfo, congr
 										agreePercent, 
 										disagreePercent);
 
-									try{
+									try
+									{
 										var elapsed = (Date.now() - startTime);
 										GremlinQuery({ string : edgeQueryStr, bindings : {}}, (edge)=>{
 											console.log(`${counter++} - ${elapsed} ms|| ${queryInfoStr}`);
