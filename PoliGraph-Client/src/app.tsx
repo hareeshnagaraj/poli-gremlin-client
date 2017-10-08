@@ -5,53 +5,67 @@ import { Provider } from 'react-redux';
 import { Store } from './state/store'
 import { Greeting, Search, Rating } from './components'
 import { GraphComponent } from './components/containers/graph'
+import { GitHub } from './components/github'
 
-import janusEventHandler from './external'
+import AppBar from 'material-ui/AppBar';
+import Toolbar from 'material-ui/Toolbar';
+import Typography from 'material-ui/Typography';
+import Grid from 'material-ui/Grid';
+import { red, lightBlue } from 'material-ui/colors';
+import { withStyles } from 'material-ui/styles';
+import PropTypes from 'prop-types';
 
-//const webSocketConn = janusEventHandler()
+import IconButton from 'material-ui/IconButton';
 
-/* Initalize the application by setting tcp event listeners to the Janus instance, dispatch initial graph import */
-//webSocketConn ? webSocketConn : 'janus connection failed'
+// Store.dispatch({type: 'FETCH_GRAPH'})
+Store.dispatch({type: 'START_GRAPH_STREAM'})
 
-Store.dispatch({type: 'FETCH_GRAPH'})
+const graphStyle = {
+  gridWrapper : {
+    textAlign: 'center'
+  }
+};
 
+const styles = {
+  root : {
+    backgroundColor: '#2196F3',
+    positionStatic : true
+  },
+};
 
-function App() {
+function CritterAppBar(props) {
   return (
-    <div>
-      <Greeting name="Mike" />
-    </div>
-  )
+    <AppBar style={styles.root}>
+      <Toolbar>
+              <Typography type="title" color="inherit">
+                congress critters
+              </Typography>
+              <IconButton
+                component="a"
+                title="GitHub"
+                color="contrast"
+                href="https://github.com/hareeshnagaraj/poli-gremlin-client">
+                <GitHub />
+              </IconButton>
+          </Toolbar>
+    </AppBar>
+  );
 }
 
-
-const headerStyles = { background: 'blue', color: 'white', margin: '0 auto' }
-const searchStyles = { background: 'grey', margin: '0 auto' }
-
-const rootElement = document.getElementById('root') as HTMLElement
+const rootElement = document.getElementById('root') as HTMLElement;
 
 ReactDOM.render(
   <Provider store={Store}>
     <div>
-      <div style={headerStyles}>
-        <h1>PoliGraph</h1>
-      </div>
-      <div>
-        <App />
-      </div>
-      <div>
-        <Rating />
-      </div>
-      <div>
-        <GraphComponent />
-      </div>
-      <div style={searchStyles}>
-        <Search input='Search for a node'/>
-      </div>
+      <Grid>
+        <CritterAppBar className={styles.root}>
+        </CritterAppBar>
+        <Grid item style={graphStyle.gridWrapper}>
+          <GraphComponent />
+        </Grid>
+      </Grid>
     </div>
   </Provider>
   ,
   rootElement
 );
-
- export default App

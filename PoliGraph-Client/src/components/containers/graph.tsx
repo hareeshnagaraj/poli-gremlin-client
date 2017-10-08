@@ -28,7 +28,6 @@ const sampleData = {
 */
 const myConfig = {
     highlightBehavior: true,
-    height: 1000,
     node: {
         color: 'lightgreen',
         size: 10000,
@@ -41,6 +40,7 @@ const myConfig = {
 
 
 function GraphVisual({graph,onClickLink,onMouseOverNode}){
+  console.log(graph);
   const asyncGraph = asyncGraphData(customizeNodes(graph))
   return (
     <Graph
@@ -80,19 +80,12 @@ const mapDispatchToProps = dispatch => {
 }
 
 
-export const GraphComponent = connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(GraphVisual)
-
-
-
 function asyncGraphData(graphData){
   if (graphData) {
     return {
       nodes: graphData,
       links: [
-          {source: 'Roger Wicker', target: 'Christopher Murphy'}
+          // {source: 'Roger Wicker', target: 'Christopher Murphy'}
       ]
     }
   }
@@ -109,17 +102,19 @@ function customizeNodeColor(node){
 }
 
 function getName(node){
+  console.log('getting name!',node)
   return `${node.properties.first_name[0].value + ' ' + node.properties.last_name[0].value}`
 }
 
 function customizeNodes(data){
+  console.log('customizing nodes!', data)
+  // return {uuid: data.id, id: getName(data), color: customizeNodeColor(data)}
   if(Object.keys(data).length !== 0){
     return data.map(node => {
       return {uuid: node.id, id: getName(node), color: customizeNodeColor(node)}
     })
   }
 }
-
 
 // Graph event callbacks
 const onClickNode = function(nodeId) {
@@ -138,3 +133,8 @@ const graphEvents = {
   onMouseOutNode,
   //onMouseOverNode
 }
+
+export const GraphComponent = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(GraphVisual)
