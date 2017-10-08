@@ -1,85 +1,47 @@
 import * as Rx from 'rxjs'
-//import gremlin from 'gremlin-client'
-const gremlin = require('gremlin-client')
-console.log('gremlin!',gremlin)
+import {streamToRx} from 'rxjs-stream'
 
+import { fetchGraphFulfilled, START_GRAPH_STREAM, GRAPH_DATA_PACKET } from '../actions'
+
+const gremlin = require('gremlin-client')
 const GremlinClient = gremlin.createClient(8182,'40.112.250.222')
 
-const GremlinQuery = function (queryContainer, dataFn) {
-	var queryString = queryContainer['string'];
-	var queryBindings = queryContainer['bindings'];
+const gremlinQueryStream = GremlinClient.stream('g.V()')//.on('data', (data) => console.log('data!!!', data))
 
-	GremlinClient.execute(
-		queryString,
-		queryBindings,
-		(err, results) => {
-			if (!err) {
-				dataFn(results);
-			} else {
-				console.log("Error executing " + queryString);
-			}
-		});
-}
-
-const getAllNodesQuery = {
-  string: "g.V()",
-  bindings: {}
-}
-
-const testQuery = GremlinQuery(getAllNodesQuery,
-(allNodes) => {
-  console.log(allNodes)
-})
-
-
-
-
-import janusEventHandler from '../external'
-import { fetchGraphFulfilled, START_GRAPH_STREAM, GRAPH_DATA_PACKET } from '../actions'
+//const socket$ = Rx.Observable.webSocket(gremlinQueryStream)
+const graphStream = streamToRx(gremlinQueryStream)
 
 /* flatmap / switch map operate on each value in observable stream, while reducing into a single observable
    that can than be subscribed to -> this is handled by the epic middleware in configureStore
 
    switchMap forces latest data into stream
+
+   Initalize the application by setting tcp event listeners to the Janus instance, dispatch initial graph import
+
+   https://stackoverflow.com/questions/45069489/using-redux-observable-and-subscribing-to-a-websocket
+   https://jsfiddle.net/rolele/ued0oh9q/
 */
 
-
-const janusAddress = 'ws://40.112.250.222:8182'
-const socket$ = Rx.Observable.webSocket(janusAddress)
-
-
+// import janusEventHandler from '../external'
+// const janusAddress = 'ws://40.112.250.222:8182'
+// const socket$ = Rx.Observable.webSocket(janusAddress)
 //const webSocketConn = janusEventHandler()
 
-/* Initalize the application by setting tcp event listeners to the Janus instance, dispatch initial graph import */
-//webSocketConn ? webSocketConn : 'janus connection failed'
 
-/* https://stackoverflow.com/questions/45069489/using-redux-observable-and-subscribing-to-a-websocket */
-
-//https://jsfiddle.net/rolele/ued0oh9q/
 
 export const fetchSocketGraphEpic = (action$, store) => {
-  console.log('called!',action$)
-  testQuery
-  return action$.ofType('START_STREAM')
+console.log(graphStream)
+  return action$.ofType('START_GRAPH_STREAM')
     .mergeMap((action: any) =>
-      socket$
-        .multiplex(
-          () => { console.log('sub')
-            return { sub: action.payload }},
-          () => { console.log('unsub')
-            return{ unsub: action.payload }},
-          graph => true //graph === action.payload
-        )
-        .map(fetchGraphFulfilled) //GRAPH_DATA_PACKET
+      graphStream
+        .map(GRAPH_DATA_PACKET)
         .retryWhen((err) => {
-            console.log('retry when err ')
-            console.log(err)
+            console.log('retry when error: ',err)
             return window.navigator.onLine ? Rx.Observable.timer(1000) : Rx.Observable.fromEvent(window, 'online')
         })
+        .takeUntil(action$.ofType('CLOSE_GRAPH_STREAM'))
         .catch(epicError)
-        .forEach((s) => console.log('inside socket epic',s)) //for development purposes only
     )
-    .forEach(s => console.log('merged stream', s))
 }
 
 export const fetchGraphEpic = (action$, store) => {

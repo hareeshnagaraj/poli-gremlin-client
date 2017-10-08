@@ -17,7 +17,8 @@ import PropTypes from 'prop-types';
 
 import IconButton from 'material-ui/IconButton';
 
-Store.dispatch({type: 'START_STREAM'})
+// Store.dispatch({type: 'FETCH_GRAPH'})
+Store.dispatch({type: 'START_GRAPH_STREAM'})
 
 const graphStyle = {
   gridWrapper : {
