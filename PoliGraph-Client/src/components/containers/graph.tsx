@@ -12,7 +12,7 @@ import { Store } from '../../state/store'
 
 const sampleData = {
     nodes: [
-      {id: 'Harry'},
+      {id: 'Harry',labelProperty:'name', name:'Fred'},
       {id: 'Sally'},
       {id: 'Alice'}
     ],
@@ -30,12 +30,14 @@ const myConfig = {
     highlightBehavior: true,
     node: {
         color: 'lightgreen',
-        size: 10000,
+        size: 1000,
         highlightStrokeColor: 'blue'
     },
     link: {
         highlightColor: 'lightblue'
-    }
+    },
+    width:1200,
+    height:950
 }
 
 
@@ -99,14 +101,15 @@ function customizeNodeColor(node){
 }
 
 function getName(node){
-  return `${node.properties.first_name[0].value + ' ' + node.properties.last_name[0].value}`
+  var firstName = decodeURIComponent(node.properties.first_name[0].value);
+  var lastName = decodeURIComponent(node.properties.last_name[0].value);
+  return `${firstName} ${lastName}`;
 }
 
 function customizeNodes(data){
-  // return {uuid: data.id, id: getName(data), color: customizeNodeColor(data)}
   if(Object.keys(data).length !== 0){
     return data.map(node => {
-      return {uuid: node.id, id: getName(node), color: customizeNodeColor(node)}
+      return { labelProperty: 'name', id: getName(node), color: customizeNodeColor(node) };
     })
   }
 }

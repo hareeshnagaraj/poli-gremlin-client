@@ -24,15 +24,31 @@ const graphStream = streamToRx(gremlinQueryStream)
 
 export const fetchSocketGraphEpic = (action$, store) => {
   return action$.ofType('START_GRAPH_STREAM')
-    .mergeMap((action: any) =>
-      graphStream
-        .map(GRAPH_DATA_PACKET)
-        .retryWhen((err) => {
-            return window.navigator.onLine ? Rx.Observable.timer(1000) : Rx.Observable.fromEvent(window, 'online')
-        })
-        .takeUntil(action$.ofType('CLOSE_GRAPH_STREAM'))
-        .catch(epicError)
-    )
+    .mergeMap((action: any) => {
+
+        return Rx.Observable.create(
+                  observer=>{
+                  GremlinClient.execute(
+                    'g.V()',
+                    {},
+                    (err, results) => {
+                      if (!err) {
+                        observer.next(results);
+                        observer.complete();
+                      } else {
+                        observer.error(new Error("Error executing "));
+                      }
+                    });
+                })
+                .map(GRAPH_DATA_PACKET)
+                .retryWhen((err) => {
+                    return window.navigator.onLine ? 
+                            Rx.Observable.timer(1000) : 
+                            Rx.Observable.fromEvent(window, 'online')
+                })
+                .takeUntil(action$.ofType('CLOSE_GRAPH_STREAM'))
+                .catch(epicError);
+    })
 }
 
 export const fetchGraphEpic = (action$, store) => {
