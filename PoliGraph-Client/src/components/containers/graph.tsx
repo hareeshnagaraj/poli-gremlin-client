@@ -28,7 +28,6 @@ const sampleData = {
 */
 const myConfig = {
     highlightBehavior: true,
-    height: 1000,
     node: {
         color: 'lightgreen',
         size: 10000,
@@ -117,7 +116,6 @@ function customizeNodes(data){
   }
 }
 
-
 // Graph event callbacks
 const onClickNode = function(nodeId) {
   console.log('Clicked node', nodeId)
@@ -135,8 +133,6 @@ const graphEvents = {
   onMouseOutNode,
   //onMouseOverNode
 }
-
-
 
 export const GraphComponent = connect(
   mapStateToProps,
