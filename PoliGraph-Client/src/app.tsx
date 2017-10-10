@@ -14,10 +14,10 @@ import Grid from 'material-ui/Grid';
 import { red, lightBlue } from 'material-ui/colors';
 import { withStyles } from 'material-ui/styles';
 import PropTypes from 'prop-types';
-
 import IconButton from 'material-ui/IconButton';
 
-// Store.dispatch({type: 'FETCH_GRAPH'})
+const rootElement = document.getElementById('root') as HTMLElement;
+
 Store.dispatch({type: 'START_GRAPH_STREAM'})
 
 const graphStyle = {
@@ -33,7 +33,7 @@ const styles = {
   },
 };
 
-function CritterAppBar(props) {
+function CritterAppBar(props){
   return (
     <AppBar style={styles.root}>
       <Toolbar>
@@ -51,8 +51,6 @@ function CritterAppBar(props) {
     </AppBar>
   );
 }
-
-const rootElement = document.getElementById('root') as HTMLElement;
 
 ReactDOM.render(
   <Provider store={Store}>

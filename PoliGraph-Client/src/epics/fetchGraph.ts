@@ -1,7 +1,5 @@
 import * as Rx from 'rxjs'
-import {streamToRx} from 'rxjs-stream'
-
-import { START_GRAPH_STREAM, GRAPH_DATA_PACKET } from '../actions'
+import { START_GRAPH_STREAM, GRAPH_DATA_PACKET, GRAPH_EDGES } from '../actions'
 
 const gremlin = require('gremlin-client')
 const GremlinClient = gremlin.createClient(8182,'40.112.250.222')
@@ -18,16 +16,16 @@ const GremlinClient = gremlin.createClient(8182,'40.112.250.222')
 */
 
 export const epicGremlinQuery = (queryString, queryBindings = {}) => {
-  return Rx.Observable.create(observer=>{
+  return Rx.Observable.create(obs=>{
                   GremlinClient.execute(
                     queryString,
                     queryBindings,
                     (err, results) => {
                       if (!err) {
-                        observer.next(results);
-                        observer.complete();
+                        obs.next(results);
+                        obs.complete();
                       } else {
-                        observer.error(new Error("Error executing "));
+                        obs.error(new Error("Error executing "));
                       }
                     });
                 });
@@ -45,8 +43,24 @@ export const fetchSocketGraphEpic = (action$, store) => {
                 })
                 .takeUntil(action$.ofType('CLOSE_GRAPH_STREAM'))
                 .catch(epicError);
-    })
-}
+    });
+};
+
+// Fired when fetchSocketGraphEpic is completed - GRAPH_DATA_POCKET invokes an action of type FETCH_GRAPH_FULFILLED
+export const fetchGraphEdgesEpic = (action$, store) => {
+  return action$.ofType('FETCH_GRAPH_FULFILLED')
+    .mergeMap((action: any) =>{
+      return epicGremlinQuery('g.E()')
+        .map(GRAPH_EDGES)
+        .retryWhen((err) => {
+                    return window.navigator.onLine ? 
+                            Rx.Observable.timer(1000) : 
+                            Rx.Observable.fromEvent(window, 'online')
+                })
+        .takeUntil(action$.ofType('CLOSE_GRAPH_STREAM'))
+        .catch(epicError);
+    });
+};
 
 /* Not being properly passed to filter function as observable? */
 function filterCongressCritters(party: string): any {
