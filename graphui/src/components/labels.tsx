@@ -18,9 +18,6 @@ class Label extends React.Component<{ node: d3Types.d3Node }, {}> {
 
 export default class Labels extends React.Component<{ nodes: d3Types.d3Node[] }, {}> {
   render() {
-    
-    let oldLabel:any = d3.selectAll(".label").data(this.props.nodes);
-    oldLabel.exit().remove();
 
     const labels = this.props.nodes.map((node: d3Types.d3Node, index: number) => {
       return <Label key={index} node={node} />;

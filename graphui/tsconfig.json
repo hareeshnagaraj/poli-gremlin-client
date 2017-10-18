@@ -3,7 +3,7 @@
     "jsx": "react",
     "module": "commonjs",
     "target": "es5",
-    "allowJs": true,
+    "allowJs": false,
     "noImplicitAny": true,
     "noUnusedLocals": true,
     "sourceMap": true,

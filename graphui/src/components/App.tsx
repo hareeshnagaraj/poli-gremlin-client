@@ -33,8 +33,9 @@ export default class App extends React.Component<Props, {}> {
     this.graph = props.graph;
     this.width = props.width;
     this.height = props.height;
-    this.drawGraph();
 
+    // Initialize simulation
+    this.simulation = d3.forceSimulation();
   }
   
   componentDidMount(){
@@ -53,7 +54,7 @@ export default class App extends React.Component<Props, {}> {
     return `${firstName} ${lastName}`;
   }
 
-  drawGraph(){
+  drawGraph_(){
       this.simulation = d3.forceSimulation()
       .force("link", 
         d3.forceLink()
@@ -68,58 +69,73 @@ export default class App extends React.Component<Props, {}> {
       .nodes(this.graph.nodes);
 
     this.simulation.force("link").links(this.graph.links);
-    this.simulation.nodes(this.props.graph.nodes).on("tick", this.ticked);
     d3.selectAll(".node").on("click",this.clicked.bind(this));
   }
 
-  public initializeGraph = (id1:string, id2:string) => {
+  drawGraph = () => {
+
+      this.simulation
+        .force("charge", d3.forceManyBody().strength(-1000))
+        .force("center", d3.forceCenter(this.width / 2, this.height / 2))
+        .nodes(this.graph.nodes)
+        .force("link", d3.forceLink().id((d: d3Types.d3Node) => { 
+          return d.id; 
+        }))
+        .force("link").links(this.graph.links);
+
+      this.simulation.nodes(this.graph.nodes).on("tick", this.ticked);
+      d3.selectAll(".node").on("click",this.clicked.bind(this));
+  
+      this.simulation.restart();
+      console.log("Restarted sim");
+  }
+
+  initializeGraph = (id1:string, id2:string) => {
     let d3graph:d3Types.d3Graph = { nodes: [], links: []};
     this.inMemoryData = { inMemoryNodes : {}, inMemoryLinks : {} };
-
+    
     GremlinClient.execute(
       "g.V()",
       {},
-      (err: any, results: any) => {
+      (e: any, results: any) => {
           d3graph.nodes = this.createD3JsonNodes(results);
           this.addNodeEdges(d3graph, id1);
-      })
+          this.throwOnError(e);
+      });
   }
 
   addNodeEdges = (d3graph:d3Types.d3Graph, id1:string) => {
-    GremlinClient.execute(`g.V(${id1}).outE()`, {}, (err: any, results: any) => {
-        d3graph.links = d3graph.links.concat(this.createD3JsonLinks(d3graph.nodes, results));
+
+    GremlinClient.execute(
+      `g.V(${id1}).outE()`,
+      {},
+      (e: any, results: any) => {
+
+        this.throwOnError(e);
+        d3graph.links = (this.createD3JsonLinks(d3graph.nodes, results));
         this.graph = d3graph;
 
         try{
           this.setState((prevState, props) => {
                 return {
                   graph: this.graph
-                }
+                };
               }, 
-              this.redrawGraph);
-        }
-        catch(any){
+              this.drawGraph);
+        }catch(any){
           console.log(any);
         }
     });
   }
 
-  redrawGraph = () => {
-
-      this.simulation
-        .force("charge", d3.forceManyBody().strength(-1000))
-        .force("center", d3.forceCenter(this.width / 2, this.height / 2))
-        .nodes(this.graph.nodes)
-        .force("link").links(this.graph.links);
-
-      d3.selectAll(".node").on("click",this.clicked.bind(this));
-
-      this.simulation.alpha(0.5).restart();
-      console.log("Restarted sim");
+  throwOnError = (e:any) => {
+    if(e != null){ 
+      console.log(e);
+      throw e;
+    }
   }
 
-  createD3JsonNodes = (data : any): any => 
-  {
+  createD3JsonNodes = (data : any): any => {
     if(data === null || data === undefined){
       return null;
     }
@@ -170,7 +186,7 @@ export default class App extends React.Component<Props, {}> {
           index : i,
           source : outgoingd3Node,
           target : incomingd3Node,
-          value : Math.round(currentLink.properties.agreePercent) % 20,
+          value : Math.round(currentLink.properties.agreePercent) % 10,
           gremlinInfo : link
         });
 
@@ -201,7 +217,7 @@ export default class App extends React.Component<Props, {}> {
       })
       .attr("y2", function (d: any) {
         return d.target.y;
-      })
+      });
 
     node
       .attr("cx", function (d: any) {
@@ -213,7 +229,7 @@ export default class App extends React.Component<Props, {}> {
 
     label
       .attr("x", function (d: any) {
-        return d.x + 5;
+        return d.x;
       })
       .attr("y", function (d: any) {
         return d.y + 5;

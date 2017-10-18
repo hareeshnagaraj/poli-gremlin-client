@@ -28,7 +28,7 @@ class Link extends React.Component<{ link: d3Types.d3Link }, {}> {
 
   render() {
     return <line className="link" ref={(ref: SVGLineElement) => this.ref = ref}
-      strokeWidth={1} />;
+      strokeWidth={Math.sqrt(this.props.link.value)} />;
   }
 }
 
@@ -53,9 +53,6 @@ export default class Links extends React.Component<{ links: d3Types.d3Link[] }, 
   }
 
   render() {
-    let link:any = d3.selectAll(".link");
-    link = link.data(this.props.links, (d:any)=> { return d.source.id });
-    link.enter().remove();
 
     if(this.links.length == undefined){
       return (
