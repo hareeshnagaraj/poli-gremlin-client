@@ -1,0 +1,19 @@
+.container {
+  background-color: #fff;
+}
+
+.node {
+  stroke: #fff;
+  cursor:pointer;
+  stroke-width: 1.5px;
+}
+
+.link {
+  stroke: #999;
+  stroke-opacity: 0.5;
+}
+
+.label {
+  font-size: 13px;
+  fill: #000;
+}
