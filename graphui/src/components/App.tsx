@@ -10,8 +10,8 @@ import '../styles/App.css';
 const gremlin = require('gremlin-client');
 const GremlinClient = gremlin.createClient(8182,'40.112.250.222');
 
-//let bernieSanders:string = "122925224";
-let angusKing:string = "40980536";
+let bernieSanders:string = "122925224";
+//let angusKing:string = "40980536";
 let initGraphGremlinQuery = 'g.V()';
 
 // Additional queries to be processed
@@ -32,8 +32,6 @@ interface Props {
 
 export default class App extends React.Component<Props, {}> {
   simulation: any;
-  inMemoryData:any = { inMemoryNodes : {}, inMemoryLinks : {} };
-  idMap:any = {};
   graph:d3Types.d3Graph;
   width:number;
   height:number;
@@ -51,7 +49,7 @@ export default class App extends React.Component<Props, {}> {
   
   componentDidMount(){
     //this.initializeGraph(bernieSanders);
-    this.initializeGraph(angusKing)
+    this.initializeGraph(bernieSanders);
   }
 
   componentWillReceiveProps(nextProps:Props) {
@@ -67,7 +65,6 @@ export default class App extends React.Component<Props, {}> {
   }
 
   drawGraph = () => {
-
       this.simulation
         .force("charge", d3.forceManyBody().strength(-1000))
         .force("center", d3.forceCenter(this.width / 2, this.height / 2))
@@ -87,7 +84,6 @@ export default class App extends React.Component<Props, {}> {
 
   initializeGraph = (id1:string) => {
     let newGraph:d3Types.d3Graph = { nodes: [], links: []};
-    // this.inMemoryData = { inMemoryNodes : {}, inMemoryLinks : {} };
     
     this.gremlin(initGraphGremlinQuery, {}, (e: any, results: any) => {
           newGraph.nodes = this.createD3JsonNodes(results);
@@ -101,9 +97,11 @@ export default class App extends React.Component<Props, {}> {
       `g.V(${nodeId}).outE()`,
       {},
       (e:any, results:any) => {
+
         newGraph.links = newGraph.links.concat(this.createD3JsonLinks(newGraph.nodes, results));
 
         this.graph = newGraph;
+        console.log(this.graph);
         this.setState((prevState, props) => {
           return {
             graph: this.graph
@@ -150,8 +148,6 @@ export default class App extends React.Component<Props, {}> {
         let name = this.getName(node);
         node.index = i;
         node.updated = false;
-        this.inMemoryData.inMemoryNodes[node.id] = node;
-        this.idMap[name] = node.id;
 
         i++;
 
@@ -172,29 +168,38 @@ export default class App extends React.Component<Props, {}> {
     }
   }
 
-   createD3JsonLinks = (d3Nodes : any, gremlinEdgeData: any) : any[]=> {
+  retrieveD3NodeIndexFromList = (data: any[], nodeId:any) : any => {
+    let i:number = 0;
+
+    data.forEach((node:any)=>{
+      if(node.id == nodeId){
+        return node;
+      }
+
+      i++;
+    })
+
+    return i;
+  }
+
+  createD3JsonLinks = (inflightNodeList : any, gremlinEdgeData: any) : any[]=> {
       let i : number = 0;
-      return gremlinEdgeData.reduce((filtered:any[], link:any) => {
+      return gremlinEdgeData.reduce((inflightLinksList:any[], currentLink:any) => {
 
-        this.inMemoryData.inMemoryLinks[`${link.id}`] = link;
-        let currentLink = this.inMemoryData.inMemoryLinks[link.id];
-        let outgoingVertex = this.inMemoryData.inMemoryNodes[currentLink.outV];
-        let incomingVertex = this.inMemoryData.inMemoryNodes[currentLink.inV];
+        let outgoingd3Node = this.retrieveD3NodeIndexFromList(inflightNodeList, currentLink.outV);
+        let incomingd3Node = this.retrieveD3NodeIndexFromList(inflightNodeList, currentLink.inV);
 
-        let outgoingd3Node = d3Nodes[outgoingVertex.index];
-        let incomingd3Node = d3Nodes[incomingVertex.index];
-
-        filtered.push({
+        inflightLinksList.push({
           index : i,
           source : outgoingd3Node,
           target : incomingd3Node,
           value : Math.round(currentLink.properties.agreePercent) % 10,
-          gremlinInfo : link
+          gremlinInfo : currentLink
         });
 
         i++;
           
-         return filtered;
+         return inflightLinksList;
       }, []);
   }
 
