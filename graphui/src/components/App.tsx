@@ -66,7 +66,7 @@ export default class App extends React.Component<Props, {}> {
 
   drawGraph = () => {
       this.simulation
-        .force("charge", d3.forceManyBody().strength(-1000))
+        .force("charge", d3.forceManyBody().strength(-200))
         .force("center", d3.forceCenter(this.width / 2, this.height / 2))
         .nodes(this.graph.nodes)
         .force("link", d3.forceLink().id((d: d3Types.d3Node) => { 
@@ -77,8 +77,7 @@ export default class App extends React.Component<Props, {}> {
       this.simulation.nodes(this.graph.nodes).on("tick", this.ticked);
       d3.selectAll(".node").on("click",this.clicked.bind(this));
   
-      this.simulation.alphaTarget(0.05);
-      this.simulation.restart();
+      this.simulation.alphaTarget(0).restart();
       console.log("Restarted sim");
   }
 
@@ -94,14 +93,12 @@ export default class App extends React.Component<Props, {}> {
 
   addAllOutgoingNodeEdges = (newGraph:d3Types.d3Graph, nodeId:string) => {
     this.gremlin(
-      `g.V(${nodeId}).outE()`,
+      `g.V(${nodeId}).outE().has('agreePercent', gt('50'))`,
       {},
       (e:any, results:any) => {
-        console.log(results);
         newGraph.links = newGraph.links.concat(this.createD3JsonLinks(newGraph.nodes, results));
 
         this.graph = newGraph;
-        console.log(this.graph);
         this.setState((prevState, props) => {
           return {
             graph: this.graph

@@ -66,7 +66,7 @@ simulation:any;
     const onDragStart = (d: any) => {
       
       if (!d3.event.active) {
-        this.props.simulation.alphaTarget(0.1).restart();
+        this.props.simulation.alphaTarget(0.01).restart();
       }
 
       d.fx = d.x;
