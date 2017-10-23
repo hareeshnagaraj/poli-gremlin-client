@@ -97,7 +97,7 @@ export default class App extends React.Component<Props, {}> {
       `g.V(${nodeId}).outE()`,
       {},
       (e:any, results:any) => {
-
+        console.log(results);
         newGraph.links = newGraph.links.concat(this.createD3JsonLinks(newGraph.nodes, results));
 
         this.graph = newGraph;
@@ -169,17 +169,16 @@ export default class App extends React.Component<Props, {}> {
   }
 
   retrieveD3NodeIndexFromList = (data: any[], nodeId:any) : any => {
-    let i:number = 0;
 
-    data.forEach((node:any)=>{
-      if(node.id == nodeId){
+    for(let j:number = 0; j < data.length; j++){
+      let node = data[j];
+      if(node.details.id === nodeId){
+        console.log(`${node.details.id} == ${nodeId}`);
         return node;
       }
+    }
 
-      i++;
-    })
-
-    return i;
+    throw new Error(`${nodeId} not found`);
   }
 
   createD3JsonLinks = (inflightNodeList : any, gremlinEdgeData: any) : any[]=> {
