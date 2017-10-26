@@ -84,7 +84,7 @@ simulation:any;
       .on("drag", onDrag.bind(this))
       .on("end", onDragEnd).bind(this))
       .on("mouseover", (d:any)=>{
-        console.log(d);
+        // console.log(d);
       });
     console.log("initializeDragListener");
   }
