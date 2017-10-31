@@ -57,7 +57,6 @@ export default class App extends React.Component<Props, {}> {
   }
   
   componentDidMount(){
-    //this.initializeGraph(bernieSanders);
     this.firstDraw = true;
     this.initializeGraph(selectedNodes);
   }
@@ -77,13 +76,13 @@ export default class App extends React.Component<Props, {}> {
   drawGraph = () => {
       this.simulation
         .force("charge", this.firstDraw == true ? 
-                            d3.forceManyBody().strength(-10) : 
-                            d3.forceManyBody().strength(-10 * this.graph.links.length / 2))
+                            d3.forceManyBody().strength(-5) : 
+                            d3.forceManyBody().strength(-5 * this.graph.links.length))
         .force("center", d3.forceCenter(this.width / 2, this.height / 2))
         .nodes(this.graph.nodes)
         .force("link", d3.forceLink().id((d: d3Types.d3Node) => { 
           return d.id; 
-        }).distance(50))
+        }).distance(10))
         .force("link").links(this.graph.links);
         
 
